@@ -112,6 +112,7 @@ datasets/
 *.parquet
 *.npy
 *.npz
+*.json
 
 # Virtual environment
 .env/
