@@ -31,3 +31,9 @@ traitlets==5.14.3
 typing_extensions==4.11.0
 tzdata==2024.1
 wcwidth==0.2.13
+gtts==2.5.1
+playsound==1.3.0
+pyaudio
+speechrecognition==3.10.4
+spacy==3.7.4
+fr-core-news-sm @ https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-3.7.0/fr_core_news_sm-3.7.0.tar.gz
