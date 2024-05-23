@@ -16,7 +16,8 @@ def speak(text):
     pygame.mixer.music.load("response.mp3")  # Load the MP3 file
     pygame.mixer.music.play()  # Play the MP3 file
     while pygame.mixer.music.get_busy():  # Wait until the MP3 file is done playing
-        time.sleep(0.1)
+        time.sleep(0.5)
+    pygame.mixer.music.unload() # Unload the MP3 file to release the file handle otherwise Windows can't remove the file
     os.remove("response.mp3")  # Remove the MP3 file
 
 # Function to recognize speech from the microphone
