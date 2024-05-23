@@ -86,6 +86,9 @@ venv.bak/
 # mkdocs documentation
 /site
 
+# notebooks
+notebooks/
+
 # mypy
 .mypy_cache/
 .dmypy.json
@@ -113,6 +116,7 @@ datasets/
 *.npy
 *.npz
 *.json
+*.mp3
 
 # Virtual environment
 .env/
