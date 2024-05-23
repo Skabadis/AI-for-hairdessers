@@ -1,7 +1,7 @@
 import datetime
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from get_credentials import get_credentials
+from google_calendar_api.get_credentials import get_credentials
 import pandas as pd
 
 
@@ -59,11 +59,11 @@ def process_events_df(df):
   return df
 
 def read_calendar():
-  creds = get_credentials()
-  events_df = read_calendar(creds)
-  events_df = process_events_df(events_df)
+	creds = get_credentials()
+	events_df = get_events(creds)
+	events_df = process_events_df(events_df)
+	return events_df
 
 # if __name__ == "__main__":
-#     print(events[['summary',
-#        'start_datetime_paris', 'end_datetime_paris']].loc[0])
-#     print(events.columns)
+# 	events_df = read_calendar()
+# 	print(events_df)

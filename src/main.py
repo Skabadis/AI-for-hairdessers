@@ -1,7 +1,7 @@
 from conversation.speech_to_text import listen
 from conversation.text_to_speech import speak
-from llms_connectors.openai_connector import get_openai_client, chat_with_Sandra
-
+from llms_connectors.openai_connector import get_openai_client, chat
+from google_calendar_api.read_calendar import read_calendar
 """
    Current issues:
    1. Long latency
@@ -18,42 +18,55 @@ if __name__ == "__main__":
         {"role": "system", 
          "content": """
          
-         You are Sandra, a friendly and helpful assistant for Skabadis, a Parisian hairdresser. You respond in French and assist clients with booking appointments. 
+        Vous êtes Sandra, une assistante sympathique et serviable de Skabadis, un coiffeur parisien. Vous répondez en français et aidez les clients à prendre rendez-vous. 
          
-         First, you need to figure out what service the customer wants to receive. There are three options, man hair cut (30 minutes appointment), women haircut (one hour appointment) and woman hair dying (45 mintues appointment). 
+        Tout d'abord, vous devez déterminer le service que le client souhaite recevoir. Il y a trois options : coupe de cheveux pour homme (rendez-vous de 30 minutes), coupe de cheveux pour femme (rendez-vous d'une heure) et teinture de cheveux pour femme (rendez-vous de 45 minutes). 
          
-         Second, after figuring out what the customer wants to do, you need to find a good time for the appointment. Our available times for tomorrow are: 9am-11am, 1pm-2pm, 3.30pm - 4pm. You need to make sure to only suggest slots that are long enough for the service the customer wants. 
+        Deuxièmement, après avoir déterminé ce que le client veut faire, vous devez trouver un bon moment pour le rendez-vous. Pour ce faire il faut que tu regarde notre calendrier. Repond: "Je regarde le calendrier." 
+               
+        Troisièmement, une fois que vous avez trouvé un bon moment pour le rendez-vous, vous devez demander au client ses coordonnées (nom, prénom et numéro de téléphone). 
          
-         Third, once you found a good time for the appointment you need to ask the customer his relevant contact details (first name, last name qnd phone number). 
+        Quatrièmement, confirmez les coordonnées du client et assurez-vous qu'elles sont correctes. Si vous avez fait une erreur, répétez avec le client jusqu'à ce qu'il confirme que vous avez bien fait les choses.
          
-         Fourth, confirm the customer contact details and make sure they are correct. Iterate with the customer if you made a mistake until the customer tells confirms you got it right.
+        Cinquièmement, confirmez au client que son rendez-vous a été pris et attendez sa réponse.
          
-         Fifth, confirm to the customer that his appointment was booked and wait for him to reply.
+        Enfin, lorsque toutes les étapes sont terminées ou que l'utilisateur vous dit au revoir, vous devez dire au revoir au client. Veuillez dire explicitement « au revoir » dans votre message.
          
-         Finally, when all steps are complete or when the user says goodbye, you need to say the goodbye to the customer. Please explicitely say 'au revoir' in your output.
-         
-         You need to have a conversation with the customer and interact with the customer as if you were a human on the phone. Do not ask everyhting from the get go. Go through each step one by one and wait for the customer to reply, and make sure you finish each step before moving to the next one. 
-         """}
+        Vous devez avoir une conversation avec le client et interagir avec lui comme si vous étiez un être humain au téléphone. Ne demandez pas tout d'emblée. Passez chaque étape une par une et attendez que le client réponde, et assurez-vous de terminer chaque étape avant de passer à la suivante.
+        """}
     ]
 
     user_data = {}
 
     client = get_openai_client()
     
-    Sandra_response = chat_with_Sandra(conversation_history, client)
+    Sandra_response = chat(conversation_history, client)
     while True:
         user_input = listen()
         if user_input:
             conversation_history.append({"role": "user", "content": user_input})
 
             # Get Sandra's response from the OpenAI model
-            Sandra_response = chat_with_Sandra(conversation_history, client)
+            Sandra_response = chat(conversation_history, client)
             
-            if 'au revoir' in Sandra_response:
+            conversation_history.append({"role": "assistant", "content": Sandra_response})
+            
+            if 'au revoir' in Sandra_response.lower():
                 print(Sandra_response)
                 break
-            conversation_history.append({"role": "assistant", "content": Sandra_response})
-
+            
+            # C'est la partie tendue. En gros il faut qu'on arrive a comprendre que c'est le moment de lire le calendrier. Ensuite faut lire le calendrier pour la bonne journée (ca aussi faut le capter de la conv), puis comprendre quels creneaux sont encore dispo (ca ca va faut juste faire une fonction qui prend en params horaire d'ouverture et de fermeture et te pond les horaires dispo dans une string pour la journee consideree). Ensuite faut resortir la string au user. 
+            # 
+            # Faut qu'on se renseigne plus sur les LLM workflow, la faire tout d'un bloc c'est pas bien. Je sais pas exactement comment implementer le truc, https://github.com/shane-kercheval/llm-workflow ce github donne une idée de ce a quoi ca devrait ressembler mais c'est pas top faut qu'on trouve mieux
+            
+            if 'regarde le calendrier' in Sandra_response:
+                events_df = read_calendar()
+                print(events_df)
+                Sandra_response = "Nous avons des disponibilités demain de 9h a 11h et de 13h a 15h"
+                conversation_history.append({"role": "assistant", "content": Sandra_response})
+                
+            
+            # Print the last message in conversation which is supposed to be SAndra's. 
             print(f"Sandra: {Sandra_response}")
             speak(Sandra_response)
 
