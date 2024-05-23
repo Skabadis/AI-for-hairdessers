@@ -22,7 +22,7 @@ pure-eval==0.2.2
 Pygments==2.18.0
 python-dateutil==2.9.0.post0
 pytz==2024.1
-pywin32==306
+pywin32==306; platform_system == "Windows"
 pyzmq==26.0.3
 six==1.16.0
 stack-data==0.6.3
@@ -31,3 +31,10 @@ traitlets==5.14.3
 typing_extensions==4.11.0
 tzdata==2024.1
 wcwidth==0.2.13
+gtts==2.5.1
+simpleaudio==1.0.4
+
+pyaudio
+speechrecognition==3.10.4
+spacy==3.7.4
+fr-core-news-sm @ https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-3.7.0/fr_core_news_sm-3.7.0.tar.gz
