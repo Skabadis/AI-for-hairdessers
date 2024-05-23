@@ -2,6 +2,7 @@ from conversation.speech_to_text import listen
 from conversation.text_to_speech import speak
 from llms_connectors.openai_connector import get_openai_client, chat
 from google_calendar_api.read_calendar import read_calendar
+
 """
    Current issues:
    1. Long latency
