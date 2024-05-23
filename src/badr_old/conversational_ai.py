@@ -6,7 +6,7 @@ import pygame
 import time
 import pandas as pd
 import dateparser
-from openai_connector import get_openai_client, chat_with_pia
+from llms_connectors.openai_connector import get_openai_client, chat_with_pia
 
 # Initialize OpenAI client
 recognizer = sr.Recognizer()
