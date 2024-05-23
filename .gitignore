@@ -113,6 +113,7 @@ datasets/
 *.npy
 *.npz
 *.json
+*.mp3
 
 # Virtual environment
 .env/
