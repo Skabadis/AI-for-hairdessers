@@ -3,7 +3,7 @@ from google_calendar_api.read_calendar import read_calendar
 from google_calendar_api.write_event import add_event
 from google_calendar_api.get_credentials import get_credentials
 
-def text_to_text(conversation_history, user_input, openai_client):
+def agentic_answer(conversation_history, user_input, openai_client):
   """
   Text to text module perfomring the interaction between the user input and the model output.
 
@@ -22,24 +22,11 @@ def text_to_text(conversation_history, user_input, openai_client):
 
   if 'au revoir' in Sandra_response.lower():
       print(Sandra_response)
+      return "End conversation"
       # Ajouter le rendez-vous au calendrier
-      creds = get_credentials()
-      event = {
-          'summary': 'Rdv - Skabadis',
-          'description': 'Rendez-vous pris par téléphone',
-          'start': {
-              'dateTime': '2024-05-28T11:00:00+02:00',  # Utilisez les données de l'utilisateur ici
-              'timeZone': 'Europe/Paris',
-          },
-          'end': {
-              'dateTime': '2024-05-28T11:30:00+02:00',  # Utilisez les données de l'utilisateur ici
-              'timeZone': 'Europe/Paris',
-          },
-          'attendees': [
-              {'email': 'contactskabadis@gmail.com'},
-          ],
-      }
-      add_event(event, creds)
+      # creds = get_credentials()
+
+      # add_event(event, creds)
 
   if 'regarde le calendrier' in Sandra_response:
       events_df = read_calendar()
@@ -49,3 +36,24 @@ def text_to_text(conversation_history, user_input, openai_client):
 
   print(f"Sandra: {Sandra_response}")
   return Sandra_response
+
+
+
+
+
+
+      # event = {
+      #     'summary': 'Rdv - Skabadis',
+      #     'description': 'Rendez-vous pris par téléphone',
+      #     'start': {
+      #         'dateTime': '2024-05-28T11:00:00+02:00',  # Utilisez les données de l'utilisateur ici
+      #         'timeZone': 'Europe/Paris',
+      #     },
+      #     'end': {
+      #         'dateTime': '2024-05-28T11:30:00+02:00',  # Utilisez les données de l'utilisateur ici
+      #         'timeZone': 'Europe/Paris',
+      #     },
+      #     'attendees': [
+      #         {'email': 'contactskabadis@gmail.com'},
+      #     ],
+      # }

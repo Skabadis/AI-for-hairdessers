@@ -3,7 +3,7 @@ from twilio.twiml.voice_response import VoiceResponse, Gather
 from twilio.rest import Client
 from llms_connectors.openai_connector import get_openai_client, chat
 from utils.read_params import read_params
-from conversation.text_to_text import text_to_text
+from conversation.text_to_text import agentic_answer
 from dotenv import load_dotenv
 import os
 
@@ -16,7 +16,7 @@ def voice():
     resp = VoiceResponse()
 
     # Welcome message
-    resp.say("Bonjour, bienvenue chez Skabadis. Veuillez patienter pendant que nous traitons votre appel.", voice='alice', language='fr-FR')
+    resp.say(parameters['welcome_message'], voice='alice', language='fr-FR')
 
     # Redirect to handle the call
     resp.redirect("/handle_call")
@@ -53,7 +53,7 @@ def process_input():
         print(f"User said: {user_input}")
 
         if user_input:
-            Sandra_response = text_to_text(conversation_history, user_input, openai_client)
+            Sandra_response = agentic_answer(conversation_history, user_input, openai_client)
             print(f"Sandra: {Sandra_response}")
             gather = Gather(input='speech', action='/process_input', timeout=5, language='fr-FR')
             gather.say(Sandra_response, voice='alice', language='fr-FR')

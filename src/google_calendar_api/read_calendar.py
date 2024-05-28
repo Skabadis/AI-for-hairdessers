@@ -34,7 +34,9 @@ def get_events(creds):
 
     if not events:
       print("No upcoming events found.")
-      return
+      return pd.DataFrame(columns=['kind', 'etag', 'id', 'status', 'htmlLink', 'created', 'updated',
+                                   'summary', 'creator', 'organizer', 'start', 'end', 'iCalUID',
+                                   'sequence', 'reminders', 'eventType'])
 
     # Prints the start and name of the next 10 events
     for event in events:
@@ -49,21 +51,21 @@ def get_events(creds):
 
 def process_events_df(df):
   # Converts datetime to make sure it is referred to in Paris timezone
-  df[['start_datetime', 
-  	  'start_timezone']] = df['start'].apply(lambda x: pd.Series([x['dateTime'], x['timeZone']]))
-  df['start_datetime_paris'] = pd.to_datetime(df['start_datetime']).dt.tz_convert('Europe/Paris')
+  if len(df) > 0:
+    df[['start_datetime', 
+        'start_timezone']] = df['start'].apply(lambda x: pd.Series([x['dateTime'], x['timeZone']]))
+    df['start_datetime_paris'] = pd.to_datetime(df['start_datetime']).dt.tz_convert('Europe/Paris')
 
-  df[['end_datetime',
-      'end_timezone']] = df['end'].apply(lambda x: pd.Series([x['dateTime'], x['timeZone']]))
-  df['end_datetime_paris'] = pd.to_datetime(df['end_datetime']).dt.tz_convert('Europe/Paris')
+    df[['end_datetime',
+        'end_timezone']] = df['end'].apply(lambda x: pd.Series([x['dateTime'], x['timeZone']]))
+    df['end_datetime_paris'] = pd.to_datetime(df['end_datetime']).dt.tz_convert('Europe/Paris')
+  else:
+      columns = list(df.columns) + ['start_datetime', 'start_timezone', 'start_datetime_paris', 'end_datetime', 'end_timezone', 'end_datetime_paris']
+      return pd.DataFrame(columns=columns)
   return df
 
 def read_calendar():
-	creds = get_credentials()
-	events_df = get_events(creds)
-	events_df = process_events_df(events_df)
-	return events_df
-
-# if __name__ == "__main__":
-# 	events_df = read_calendar()
-# 	print(events_df)
+  creds = get_credentials()
+  events_df = get_events(creds)
+  events_df = process_events_df(events_df)
+  return events_df
