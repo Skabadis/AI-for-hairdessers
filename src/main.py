@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 # Twilio credentials
 account_sid = 'ACafb4c3e0b611e9b7c209a99fdac2f235'
-auth_token = 'e47a742920fc8ba7a4363dc4580a03ba'
+auth_token = '9c8f1280e8997a2fd2e90cea88b71c71'
 client = Client(account_sid, auth_token)
 
 # Initialize AI conversation agent
@@ -135,4 +135,4 @@ def process_input():
     return str(resp)
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True)
