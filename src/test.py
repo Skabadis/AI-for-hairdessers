@@ -1,0 +1,2 @@
+from google_calendar_api.read_calendar import read_calendar
+read_calendar()
