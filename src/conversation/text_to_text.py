@@ -25,14 +25,25 @@ def agentic_answer(conversation_history, user_input, openai_client):
 
   if ('regarde' in Sandra_response) and ('calendrier' in Sandra_response):
       print("Regarde calendrier")
-      events_df = read_calendar()
-      appointments = events_df[["event_start", "event_end"]]
-      print(appointments)
       
-      Sandra_response = get_open_slots_str(appointments, "2024-05-30")
-      # Sandra_response = "Nous avons des disponibilités demain de 9h à 11h et de 13h à 15h"
-      conversation_history.append({"role": "assistant", "content": Sandra_response})
-      return Sandra_response
+      conversation_history.append({
+                                   "role": "user", 
+                                   "content": params["prompts"]["read_calendar_on_day_prompt"]
+                                  })
+      Sandra_response = chat(conversation_history, openai_client)
+      
+      try:
+        date = json.loads(Sandra_response)['date']
+        events_df = read_calendar()
+        appointments = events_df[["event_start", "event_end"]]
+        print(appointments)
+        
+        Sandra_response = get_open_slots_str(appointments, "2024-05-30")
+        # Sandra_response = "Nous avons des disponibilités demain de 9h à 11h et de 13h à 15h"
+        conversation_history.append({"role": "assistant", "content": Sandra_response})
+        return Sandra_response
+      except Exception as e:
+        print(f"An error occurred when trying to get date to read calendar: {e}")
   
   if 'sauvegarde' in Sandra_response.lower():
       print("Sauvegarde")
@@ -52,8 +63,7 @@ def agentic_answer(conversation_history, user_input, openai_client):
                                        "content": params["discussion"]["write_event_prompt"]})
           return Sandra_response
       except Exception as e:
-          print("Probably JSON conversion fucked up")
-          print(f"An error occurred: {e}")
+          print(f"An error occurred when trying to write event to calendar: {e}")
           
           
   if 'au revoir' in Sandra_response.lower():
