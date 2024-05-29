@@ -16,7 +16,7 @@ def voice():
     resp = VoiceResponse()
 
     # Welcome message
-    resp.say(parameters['welcome_message'], voice='alice', language='fr-FR')
+    resp.say(parameters["prompts"]['welcome_message'], voice='alice', language='fr-FR')
 
     # Redirect to handle the call
     resp.redirect("/handle_call")
@@ -77,7 +77,7 @@ if __name__ == "__main__":
     # Initialize AI conversation agent
     conversation_history = [
         {"role": "system", 
-        "content": parameters["conversation_initial_prompt"]}
+        "content": parameters["prompts"]["conversation_initial_prompt"]}
     ]
 
     user_data = {}
