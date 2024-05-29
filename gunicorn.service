@@ -1,0 +1,15 @@
+[Unit]
+Description=gunicorn daemon
+After=network.target
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/AI-for-hairdessers
+EnvironmentFile=/home/ubuntu/AI-for-hairdessers/.env
+ExecStart=/home/ubuntu/AI-for-hairdessers/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:8000 wsgi:app
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
