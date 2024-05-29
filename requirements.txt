@@ -38,6 +38,7 @@ tzdata==2024.1
 wcwidth==0.2.13
 gtts==2.5.1
 simpleaudio==1.0.4
+Werkzeug==2.0.3
 
 pyaudio
 speechrecognition==3.10.4
@@ -45,3 +46,4 @@ spacy==3.7.4
 fr-core-news-sm @ https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-3.7.0/fr_core_news_sm-3.7.0.tar.gz
 gunicorn
 Flask==2.1.2
+Werkzeug==2.0.3
