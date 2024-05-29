@@ -10,7 +10,7 @@ cd ~/AI-for-hairdessers
 source venv/bin/activate
 
 # 4. Installer les requirements
-pip install requirements.txt
+pip install -r requirements.txt
 
 # 5. Connecter la clé OpenAI
 export OPENAI_API_KEY="votre_clé_api_openai"

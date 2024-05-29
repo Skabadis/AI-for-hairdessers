@@ -1,13 +1,13 @@
-name: CI
+name: Deploy to EC2
 
 on:
   push:
-    branches: [ main, ismail/hosting ]
-  pull_request:
-    branches: [ main, ismail/hosting ]
+    branches:
+      - main
+      - ismail/hosting
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,43 +19,21 @@ jobs:
       with:
         python-version: '3.12'
 
-    - name: Install system dependencies
+    - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y \
-          libasound2-dev \
-          portaudio19-dev \
-          libportaudio2 \
-          libportaudiocpp0 \
-          ffmpeg \
-          libav-tools \
-          libsdl1.2-dev \
-          libmp3lame-dev
-
-    - name: Install Python dependencies
-      run: |
+        sudo apt-get install -y ffmpeg
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run tests
-      run: |
-        # Ajoutez vos commandes de test ici
-        pytest
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Deploy to AWS EC2
-      uses: appleboy/ssh-action@v0.1.4
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           cd ~/AI-for-hairdessers
-          ./deploy.sh
+          source venv/bin/activate
+          pip install -r requirements.txt
+          nohup gunicorn --bind 0.0.0.0:8000 wsgi:app &
