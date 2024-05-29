@@ -34,7 +34,6 @@ jobs:
         echo TWILIO_AUTH_TOKEN=${{ secrets.TWILIO_AUTH_TOKEN }} >> .env
         cat .env
 
-
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
       with:
@@ -43,7 +42,9 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           cd ~/AI-for-hairdessers
+          git pull origin main
           source venv/bin/activate
           pip install -r requirements.txt
-          scp .env ubuntu@ip-172-31-15-246:/home/ubuntu/AI-for-hairdessers/.env
-          nohup gunicorn --bind 0.0.0.0:8000 wsgi:app &
+          cp .env /home/ubuntu/AI-for-hairdessers/.env
+          sudo systemctl daemon-reload
+          sudo systemctl restart gunicorn
