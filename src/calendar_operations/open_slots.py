@@ -3,7 +3,7 @@ import numpy as np
 from datetime import timedelta
 from utils.utils import convert_dt_to_time_str
 
-def get_open_slots(appointments, day, opening_time="09:00:00", closing_time="17:00:00", freq='30min', duration=30):
+def get_open_slots(appointments, day, opening_time, closing_time, freq, duration):
   opening_time = pd.Timestamp(f'{day} {opening_time}')
   closing_time = pd.Timestamp(f'{day} {closing_time}')
   day = pd.to_datetime(day) 
@@ -27,11 +27,16 @@ def get_open_slots(appointments, day, opening_time="09:00:00", closing_time="17:
   appointments = pd.concat([appointments, 
                             open_close_appointments])
 
+  print(f"Spine df: {spine_df}")
+  print(f"Spine df types: {spine_df.dtypes}")
+  
+  print(f"appointments df: {appointments}")
+  print(f"appointments df types: {appointments.dtypes}")
   # Get appointments already booked on spine
   open_slots = pd.merge(spine_df,
                         appointments,
-                        left_on=['day', 'time'],
-                        right_on=['day', 'event_start'],
+                        left_on=['time'],
+                        right_on=[ 'event_start'],
                         how='left',
                         validate='1:1')
 
@@ -51,7 +56,7 @@ def get_open_slots(appointments, day, opening_time="09:00:00", closing_time="17:
 
   open_slots = open_slots.loc[open_slots['available']]\
                         .groupby('available_window_nbr').agg({'time': ('min', 'max'),
-                                                              'day': 'last'})
+                                                              })
 
   # df formatting
   open_slots.columns = [x[0] + '_' + x[1] for x in open_slots.columns]
@@ -65,7 +70,7 @@ def convert_open_slots_to_str(open_slots):
   availabilities_string = ' , '.join(availabilities_string)
   return f'Nous avons des disponibilites a {availabilities_string}'
 
-def get_open_slots_str(appointments, day, opening_time, closing_time, freq='30min', duration=30):
-    open_slots = get_open_slots(appointments, day, opening_time, closing_time, freq=freq, duration=duration)
+def get_open_slots_str(appointments, day, opening_time="09:00:00", closing_time="17:00:00", freq='30min', duration=30):
+    open_slots = get_open_slots(appointments, day, opening_time=opening_time, closing_time=closing_time, freq=freq, duration=duration)
     availabilities_string = convert_open_slots_to_str(open_slots)
     return availabilities_string

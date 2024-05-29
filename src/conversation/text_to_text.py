@@ -2,6 +2,7 @@ from llms_connectors.openai_connector import chat
 from google_calendar_api.read_calendar import read_calendar
 from google_calendar_api.write_event import add_event
 from google_calendar_api.get_credentials import get_credentials
+from calendar_operations.open_slots import get_open_slots_str
 
 def agentic_answer(conversation_history, user_input, openai_client):
   """
@@ -30,10 +31,14 @@ def agentic_answer(conversation_history, user_input, openai_client):
 
   if 'regarde le calendrier' in Sandra_response:
       events_df = read_calendar()
-      print(events_df)
-      Sandra_response = "Nous avons des disponibilités demain de 9h à 11h et de 13h à 15h"
+      appointments = events_df[["event_start", "event_end"]]
+      print(appointments)
+      
+      Sandra_response = get_open_slots_str(appointments, "2024-05-30")
+      # Sandra_response = "Nous avons des disponibilités demain de 9h à 11h et de 13h à 15h"
       conversation_history.append({"role": "assistant", "content": Sandra_response})
-
+  # if 'save event' in Sandra_response:
+      
   print(f"Sandra: {Sandra_response}")
   return Sandra_response
 
