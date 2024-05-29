@@ -51,10 +51,13 @@ def agentic_answer(conversation_history, user_input, openai_client):
       Sandra_reponse (text): LLM response
   """
   params = read_params()
+  
+  # Regular answer workflow
   conversation_history.append({"role": "user", "content": user_input})
   Sandra_response = chat(conversation_history, openai_client)
   conversation_history.append({"role": "assistant", "content": Sandra_response})
 
+  # Read calendar workflow
   if ('regarde' in Sandra_response) and ('calendrier' in Sandra_response):
       print("Regarde calendrier")
       conversation_history.append({"role": "system", 
@@ -67,6 +70,7 @@ def agentic_answer(conversation_history, user_input, openai_client):
         print(f"An error occurred when trying to get date to read calendar: {e}")
         return params["discussion"]["error_message"]
   
+  # Save event workflow
   if 'sauvegarde' in Sandra_response.lower():
       print("Sauvegarde")
       conversation_history.append({"role": "system", 
@@ -78,7 +82,8 @@ def agentic_answer(conversation_history, user_input, openai_client):
       except Exception as e:
           print(f"An error occurred when trying to write event to calendar: {e}")
           return params["discussion"]["error_message"]
-          
+  
+  # End conversation workflow        
   if 'au revoir' in Sandra_response.lower():
     print(Sandra_response)
     print("Au revoir")
