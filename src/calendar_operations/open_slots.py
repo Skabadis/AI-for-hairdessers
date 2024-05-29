@@ -29,9 +29,9 @@ def get_open_slots(appointments, day, opening_time, closing_time, freq, duration
 
   # Get appointments already booked on spine
   open_slots = pd.merge(spine_df,
-                        appointments,
+                        appointments.drop_duplicates(subset=["event_start"]), # quick fix, to improve
                         left_on=['time'],
-                        right_on=[ 'event_start'],
+                        right_on=['event_start'],
                         how='left',
                         validate='1:1')
 

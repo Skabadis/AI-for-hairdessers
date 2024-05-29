@@ -33,7 +33,7 @@ if __name__ == "__main__":
         if user_input:
             Sandra_response = agentic_answer(conversation_history, user_input, openai_client)
             # Print the last message in conversation which is supposed to be SAndra's. 
-            # print(f"Sandra: {Sandra_response}")
+            print(f"Sandra: {Sandra_response}")
             # speak(Sandra_response)
             
             if Sandra_response == "End conversation":

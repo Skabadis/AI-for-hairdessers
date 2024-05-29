@@ -47,9 +47,6 @@ prompts:
 
     Fait très attention a ne retourner que le json et rien d'autre. 
 
-  event_saved_prompt: |
-    Le rendez-vous a bien été enregistré. Tu peux maintenant confirmez au client que son rendez-vous a été pris et attendre sa réponse. Ne dis surtout pas au revoir à cette étape!
-
   read_calendar_on_day_prompt: |
     Il faut que tu renvoies un JSON contenant la data à laquelle le client veut prendre rendez-vous contenant l'information suivante: date désirée. 
 
@@ -62,7 +59,12 @@ prompts:
     '{
       "date": "2024-06-05"
     }'
-
+    Pour contexte, nous sommes en 2024. Si l'utilisateur ne précise pas l'annéée, dis toi que c'est 2024.
 discussion: 
   welcome_message: |
     Bonjour, bienvenue au salon Skabadis. Je suis Sandra, l'assistante IA de prise de rendez-vous. Comment puis-je vous aider?
+  
+  event_saved_message: |
+    Votre rendez-vous est bien confirmé! Merci beaucoup pour votre appel. Est ce que je peux faire autre chose pour vous?
+  error_message: |
+    Une erreur inconnue est survenue, veuillez essayer de rappeler.
