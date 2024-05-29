@@ -4,13 +4,13 @@ comm==0.2.2
 debugpy==1.8.1
 decorator==5.1.1
 executing==2.0.1
-google-api-python-client
-google-auth-oauthlib
+google-api-python-client==2.131.0
+google-auth-oauthlib==1.2.0
 ipykernel==6.29.4
-ipython==8.18.1  # Remplacer par une version compatible
+ipython==8.18.1
 jedi==0.19.1
-jupyter_client==8.6.1
-jupyter_core==5.7.2
+jupyter-client==8.6.1
+jupyter-core==5.7.2
 matplotlib-inline==0.1.7
 nest-asyncio==1.6.0
 numpy==1.26.4
@@ -24,9 +24,8 @@ psutil==5.9.8
 pure-eval==0.2.2
 Pygments==2.18.0
 python-dateutil==2.9.0.post0
-python-dotenv==1.0.0 
+python-dotenv==1.0.0
 pytz==2024.1
-pywin32==306; platform_system == "Windows"
 pyzmq==26.0.3
 six==1.16.0
 stack-data==0.6.3
@@ -38,12 +37,10 @@ tzdata==2024.1
 wcwidth==0.2.13
 gtts==2.5.1
 simpleaudio==1.0.4
-Werkzeug==2.0.3
-
-pyaudio
+pyaudio==0.2.14
 speechrecognition==3.10.4
 spacy==3.7.4
 fr-core-news-sm @ https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-3.7.0/fr_core_news_sm-3.7.0.tar.gz
-gunicorn
+gunicorn==22.0.0
 Flask==2.1.2
 Werkzeug==2.0.3
