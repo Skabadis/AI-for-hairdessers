@@ -3,7 +3,11 @@ import numpy as np
 from datetime import timedelta
 from utils.utils import convert_dt_to_time_str
 
-def get_open_slots(appointments, day, opening_time, closing_time, freq='30min', duration=30):
+def get_open_slots(appointments, day, opening_time="09:00:00", closing_time="17:00:00", freq='30min', duration=30):
+  opening_time = pd.Timestamp(f'{day} {opening_time}')
+  closing_time = pd.Timestamp(f'{day} {closing_time}')
+  day = pd.to_datetime(day) 
+  
   # Generate frea-minute intervals within the working hours
   time_slots = pd.date_range(start=opening_time, end=closing_time, freq=freq)
 
@@ -14,6 +18,7 @@ def get_open_slots(appointments, day, opening_time, closing_time, freq='30min', 
       'available': True
   })
 
+  # Add closing as an appointment to avoid having appointments booked at closing time
   open_close_appointments = pd.DataFrame({
       'day': [day] ,
       'event_start': [closing_time],
@@ -22,7 +27,7 @@ def get_open_slots(appointments, day, opening_time, closing_time, freq='30min', 
   appointments = pd.concat([appointments, 
                             open_close_appointments])
 
-
+  # Get appointments already booked on spine
   open_slots = pd.merge(spine_df,
                         appointments,
                         left_on=['day', 'time'],
@@ -30,6 +35,7 @@ def get_open_slots(appointments, day, opening_time, closing_time, freq='30min', 
                         how='left',
                         validate='1:1')
 
+  # Figure out reamining available slots
   td = timedelta(minutes=duration)
   open_slots['previous_event_end'] = open_slots['event_end'].ffill()
   open_slots['next_event_start'] = open_slots['event_start'].bfill()
@@ -47,6 +53,7 @@ def get_open_slots(appointments, day, opening_time, closing_time, freq='30min', 
                         .groupby('available_window_nbr').agg({'time': ('min', 'max'),
                                                               'day': 'last'})
 
+  # df formatting
   open_slots.columns = [x[0] + '_' + x[1] for x in open_slots.columns]
   open_slots = open_slots.reset_index()
   return open_slots
