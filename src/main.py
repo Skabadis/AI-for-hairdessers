@@ -16,7 +16,7 @@ def voice():
     resp = VoiceResponse()
 
     # Welcome message
-    resp.say(parameters["prompts"]['welcome_message'], voice='alice', language='fr-FR')
+    resp.say(parameters["discussion"]['welcome_message'], voice='alice', language='fr-FR')
 
     # Redirect to handle the call
     resp.redirect("/handle_call")

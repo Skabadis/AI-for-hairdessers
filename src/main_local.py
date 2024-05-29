@@ -15,18 +15,18 @@ from conversation.text_to_text import agentic_answer
 if __name__ == "__main__":
     parameters = read_params()
     
-    print(parameters['prompts']['welcome_message'])
-    speak(parameters['prompts']['welcome_message'])
-    
     # Initial conversation history for the OpenAI model
     conversation_history = [
         {"role": "system", 
         "content": parameters["prompts"]["conversation_initial_prompt"]}
     ]
-    user_data = {}
-
     openai_client = get_openai_client()
 
+    conversation_history.append( 
+                                {"role": "assistant", 
+                                "content": parameters['discussion']['welcome_message']})
+    print(parameters['discussion']['welcome_message'])
+    speak(parameters['discussion']['welcome_message'])
     while True:
         user_input = listen()
         if user_input:

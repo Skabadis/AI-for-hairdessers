@@ -1,8 +1,10 @@
 from llms_connectors.openai_connector import chat
 from google_calendar_api.read_calendar import read_calendar
 from google_calendar_api.write_event import add_event
-from google_calendar_api.get_credentials import get_credentials
 from calendar_operations.open_slots import get_open_slots_str
+from utils.read_params import read_params
+import json
+import pandas as pd
 
 def agentic_answer(conversation_history, user_input, openai_client):
   """
@@ -16,20 +18,13 @@ def agentic_answer(conversation_history, user_input, openai_client):
   Returns:
       Sandra_reponse (text): LLM response
   """
-  
+  params = read_params()
   conversation_history.append({"role": "user", "content": user_input})
   Sandra_response = chat(conversation_history, openai_client)
   conversation_history.append({"role": "assistant", "content": Sandra_response})
 
-  if 'au revoir' in Sandra_response.lower():
-      print(Sandra_response)
-      return "End conversation"
-      # Ajouter le rendez-vous au calendrier
-      # creds = get_credentials()
-
-      # add_event(event, creds)
-
-  if 'regarde le calendrier' in Sandra_response:
+  if ('regarde' in Sandra_response) and ('calendrier' in Sandra_response):
+      print("Regarde calendrier")
       events_df = read_calendar()
       appointments = events_df[["event_start", "event_end"]]
       print(appointments)
@@ -37,28 +32,36 @@ def agentic_answer(conversation_history, user_input, openai_client):
       Sandra_response = get_open_slots_str(appointments, "2024-05-30")
       # Sandra_response = "Nous avons des disponibilités demain de 9h à 11h et de 13h à 15h"
       conversation_history.append({"role": "assistant", "content": Sandra_response})
-  # if 'save event' in Sandra_response:
-      
+      return Sandra_response
+  
+  if 'sauvegarde' in Sandra_response.lower():
+      print("Sauvegarde")
+      conversation_history.append({"role": "user", "content": params["prompts"]["write_event_prompt"]})
+      Sandra_response = chat(conversation_history, openai_client)
+      try:
+          event = json.loads(Sandra_response)
+          start = event["start"]
+          endTime = pd.Timestamp(start["dateTime"], tz=start["timeZone"]) + pd.Timedelta(minutes=30)
+          endTime = endTime.strftime('%Y-%m-%dT%H:%M:%S')
+
+          event["end"] = {"dateTime": endTime,
+                          "timeZone": start["timeZone"]}
+          print(f"Success, dictionary well converted: {event}")
+          add_event(event)
+          conversation_history.append({"role": "system", 
+                                       "content": params["discussion"]["write_event_prompt"]})
+          return Sandra_response
+      except Exception as e:
+          print("Probably JSON conversion fucked up")
+          print(f"An error occurred: {e}")
+          
+          
+  if 'au revoir' in Sandra_response.lower():
+    print(Sandra_response)
+    print("Au revoir")
+    return "End conversation"
+
   print(f"Sandra: {Sandra_response}")
   return Sandra_response
 
 
-
-
-
-
-      # event = {
-      #     'summary': 'Rdv - Skabadis',
-      #     'description': 'Rendez-vous pris par téléphone',
-      #     'start': {
-      #         'dateTime': '2024-05-28T11:00:00+02:00',  # Utilisez les données de l'utilisateur ici
-      #         'timeZone': 'Europe/Paris',
-      #     },
-      #     'end': {
-      #         'dateTime': '2024-05-28T11:30:00+02:00',  # Utilisez les données de l'utilisateur ici
-      #         'timeZone': 'Europe/Paris',
-      #     },
-      #     'attendees': [
-      #         {'email': 'contactskabadis@gmail.com'},
-      #     ],
-      # }

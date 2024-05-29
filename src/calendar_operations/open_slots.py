@@ -27,11 +27,6 @@ def get_open_slots(appointments, day, opening_time, closing_time, freq, duration
   appointments = pd.concat([appointments, 
                             open_close_appointments])
 
-  print(f"Spine df: {spine_df}")
-  print(f"Spine df types: {spine_df.dtypes}")
-  
-  print(f"appointments df: {appointments}")
-  print(f"appointments df types: {appointments.dtypes}")
   # Get appointments already booked on spine
   open_slots = pd.merge(spine_df,
                         appointments,
