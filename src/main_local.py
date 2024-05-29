@@ -30,11 +30,13 @@ if __name__ == "__main__":
     while True:
         user_input = listen()
         if user_input:
+            if Sandra_response == "End conversation":
+                speak("Au revoir")
+                break
             Sandra_response = agentic_answer(conversation_history, user_input, openai_client)
             # Print the last message in conversation which is supposed to be SAndra's. 
             print(f"Sandra: {Sandra_response}")
             speak(Sandra_response)
             
-            if Sandra_response == "End conversation":
-                break
+
         
