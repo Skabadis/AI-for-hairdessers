@@ -26,13 +26,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: 'Create env file'
+    - name: Create env file
       run: |
-        touch .env
-        echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> .env
+        echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} > .env
         echo TWILIO_ACCOUNT_SID=${{ secrets.TWILIO_ACCOUNT_SID }} >> .env
         echo TWILIO_AUTH_TOKEN=${{ secrets.TWILIO_AUTH_TOKEN }} >> .env
-        cat .env
 
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
@@ -45,6 +43,6 @@ jobs:
           git pull origin main
           source venv/bin/activate
           pip install -r requirements.txt
-          cp .env /home/ubuntu/AI-for-hairdessers/.env
+          mv ~/AI-for-hairdessers/.env .env
           sudo systemctl daemon-reload
           sudo systemctl restart gunicorn
