@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 import os
 
 app = Flask(__name__)
+parameters = read_params()
 
 @app.route("/voice", methods=['GET', 'POST'])
 def voice():
@@ -65,7 +66,6 @@ def process_input():
     return str(resp)
 
 if __name__ == "__main__":
-    parameters = read_params()
 
     # Twilio credentials
     load_dotenv()
