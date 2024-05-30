@@ -55,16 +55,16 @@ def agentic_answer(conversation_history, user_input, openai_client):
   # Regular answer workflow
   conversation_history.append({"role": "user", "content": user_input})
   Sandra_response = chat(conversation_history, openai_client)
-  conversation_history.append({"role": "assistant", "content": Sandra_response})
+  conversation_history.append({"role": "assistant", "content": Sandra_response}) # TODO: put it after the ifs?
 
   # Read calendar workflow
   if ('regarde' in Sandra_response) and ('calendrier' in Sandra_response):
       print("Regarde calendrier")
       conversation_history.append({"role": "system", 
                                    "content": params["prompts"]["read_calendar_on_day_prompt"]})
-      Sandra_response = chat(conversation_history, openai_client)
+      json_input_str = chat(conversation_history, openai_client)
       try:
-        Sandra_response = get_events_workflow(Sandra_response, conversation_history)
+        Sandra_response = get_events_workflow(json_input_str, conversation_history)
         return Sandra_response
       except Exception as e:
         print(f"An error occurred when trying to get date to read calendar: {e}")
