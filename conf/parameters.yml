@@ -48,7 +48,7 @@ prompts:
     Fait très attention a ne retourner que le json et rien d'autre. 
 
   read_calendar_on_day_prompt: |
-    Il faut que tu renvoies un JSON contenant la data à laquelle le client veut prendre rendez-vous contenant l'information suivante: date désirée. 
+    Il faut que tu renvoies un JSON contenant la date à laquelle le client veut prendre rendez-vous qui contient l'information suivante: date désirée. 
 
     Voila a quoi doit ressembler le JSON:
     '{
