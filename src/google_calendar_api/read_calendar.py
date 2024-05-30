@@ -12,7 +12,7 @@ TODO: Figure out better schema to account for having multiple hairdresser in the
 
 def get_events(creds, date):
   """Shows basic usage of the Google Calendar API.
-  Prints the start and name of the next 10 events on the user's calendar.
+  Prints the start and name of the events of the date.
   """
   try:
     service = build("calendar", "v3", credentials=creds)
