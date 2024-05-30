@@ -11,7 +11,20 @@ import logging
 
 
 app = Flask(__name__)
+
+
 parameters = read_params()
+# Initialize AI conversation agent
+conversation_history = [
+    {"role": "system", 
+    "content": parameters["prompts"]["conversation_initial_prompt"]}
+]
+
+user_data = {}
+
+openai_client = get_openai_client()
+
+app.logger.info(f"Open AI client retrieved properly")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -82,18 +95,6 @@ if __name__ == "__main__":
         app.logger.info(f"Twilio SID: {account_sid}, Auth Token: {auth_token}")
                                                 
         client = Client(account_sid, auth_token)
-
-        # Initialize AI conversation agent
-        conversation_history = [
-            {"role": "system", 
-            "content": parameters["prompts"]["conversation_initial_prompt"]}
-        ]
-
-        user_data = {}
-
-        openai_client = get_openai_client()
-        
-        app.logger.info(f"Open AI client retrieved properly")
 
         app.run(debug=True)
     except Exception as e:
