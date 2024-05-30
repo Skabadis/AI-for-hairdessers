@@ -6,14 +6,20 @@ from utils.read_params import read_params
 from conversation.text_to_text import agentic_answer
 from dotenv import load_dotenv
 import os
+import logging
+
+
 
 app = Flask(__name__)
 parameters = read_params()
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+
 @app.route("/voice", methods=['GET', 'POST'])
 def voice():
     """Respond to incoming calls with a simple message."""
-    print("Received a call request at /voice")
+    app.logger.info("Received a call request at /voice")
     resp = VoiceResponse()
 
     # Welcome message
@@ -26,7 +32,7 @@ def voice():
 
 @app.route("/handle_call", methods=['GET', 'POST'])
 def handle_call():
-    print("Handling call at /handle_call")
+    app.logger.info("Handling call at /handle_call")
     resp = VoiceResponse()
 
     try:
@@ -35,13 +41,13 @@ def handle_call():
         conversation_history.append({"role": "assistant", "content": Sandra_response})
         
         # Debug message
-        print(f"Sandra's response: {Sandra_response}")
+        app.logger.info(f"Sandra's response: {Sandra_response}")
 
         gather = Gather(input='speech', action='/process_input', timeout=5, language='fr-FR')
         gather.say(Sandra_response, voice='alice', language='fr-FR')
         resp.append(gather)
     except Exception as e:
-        print(f"Error: {e}")
+        app.logger.error(f"Error: {e}")
         resp.say("Une erreur est survenue. Veuillez réessayer plus tard.", voice='alice', language='fr-FR')
 
     return str(resp)
@@ -51,37 +57,44 @@ def process_input():
     resp = VoiceResponse()
     try:
         user_input = request.form.get('SpeechResult')
-        print(f"User said: {user_input}")
+        app.logger.info(f"User said: {user_input}")
 
         if user_input:
             Sandra_response = agentic_answer(conversation_history, user_input, openai_client)
-            print(f"Sandra: {Sandra_response}")
+            app.logger.info(f"Sandra: {Sandra_response}")
             gather = Gather(input='speech', action='/process_input', timeout=5, language='fr-FR')
             gather.say(Sandra_response, voice='alice', language='fr-FR')
             resp.append(gather)
     except Exception as e:
-        print(f"Error in process_input: {e}")
+        app.logger.error(f"Error in process_input: {e}")
         resp.say("Une erreur est survenue. Veuillez réessayer plus tard.", voice='alice', language='fr-FR')
 
     return str(resp)
 
 if __name__ == "__main__":
+    try:
+        app.logger.info(f"Parameters loaded: {parameters}")
+        
+        # Twilio credentials
+        load_dotenv()
+        account_sid = os.getenv('TWILIO_ACCOUNT_SID')
+        auth_token = os.getenv('TWILIO_AUTH_TOKEN')
+        app.logger.info(f"Twilio SID: {account_sid}, Auth Token: {auth_token}")
+                                                
+        client = Client(account_sid, auth_token)
 
-    # Twilio credentials
-    load_dotenv()
-    account_sid = os.getenv('TWILIO_ACCOUNT_SID')
-    auth_token = os.getenv('TWILIO_AUTH_TOKEN')
-                            
-    client = Client(account_sid, auth_token)
+        # Initialize AI conversation agent
+        conversation_history = [
+            {"role": "system", 
+            "content": parameters["prompts"]["conversation_initial_prompt"]}
+        ]
 
-    # Initialize AI conversation agent
-    conversation_history = [
-        {"role": "system", 
-        "content": parameters["prompts"]["conversation_initial_prompt"]}
-    ]
+        user_data = {}
 
-    user_data = {}
+        openai_client = get_openai_client()
+        
+        app.logger.info(f"Open AI client retrieved properly")
 
-    openai_client = get_openai_client()
-
-    app.run(debug=True)
+        app.run(debug=True)
+    except Exception as e:
+        app.logger.error(f"Failed to start the application: {e}")
