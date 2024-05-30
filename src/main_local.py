@@ -22,11 +22,14 @@ if __name__ == "__main__":
     ]
     openai_client = get_openai_client()
 
+
+    Sandra_response = parameters['discussion']['welcome_message']
     conversation_history.append( 
                                 {"role": "assistant", 
-                                "content": parameters['discussion']['welcome_message']})
-    print(parameters['discussion']['welcome_message'])
-    speak(parameters['discussion']['welcome_message'])
+                                "content": Sandra_response})
+    print(Sandra_response)
+    speak(Sandra_response)
+    
     while True:
         user_input = listen()
         if user_input:
