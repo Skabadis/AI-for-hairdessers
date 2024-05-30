@@ -14,7 +14,7 @@ def get_events_workflow(Sandra_response, conversation_history):
   appointments = events_df[["event_start", "event_end"]]
   print(appointments)
 
-  Sandra_response = get_open_slots_str(appointments, "2024-05-30")
+  Sandra_response = get_open_slots_str(appointments, date)
   # Sandra_response = "Nous avons des disponibilités demain de 9h à 11h et de 13h à 15h"
   conversation_history.append({"role": "assistant", "content": Sandra_response})    
   return Sandra_response
