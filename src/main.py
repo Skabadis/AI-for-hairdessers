@@ -57,7 +57,8 @@ def process_input():
     try:
         user_input = request.form.get('SpeechResult')
         app.logger.info(f"User said: {user_input}")
-        app.logger.info(f"Conversation history: {conversation_history}")
+        if len(conversation_history)>1:
+            app.logger.info(f"Conversation history: {conversation_history[1:]}")
 
         if user_input:
             Sandra_response = agentic_answer(conversation_history, user_input, openai_client)
