@@ -14,28 +14,28 @@ from conversation.text_to_text import agentic_answer
 
 if __name__ == "__main__":
     parameters = read_params()
-    
+
     # Initial conversation history for the OpenAI model
     conversation_history = [
-        {"role": "system", 
-        "content": parameters["prompts"]["conversation_initial_prompt"]}
+        {"role": "system",
+         "content": parameters["prompts"]["conversation_initial_prompt"]}
     ]
     user_data = {}
 
     openai_client = get_openai_client()
-    
+
     Sandra_response = parameters['discussion']['welcome_message']
-    conversation_history.append( 
-                                {"role": "assistant", 
-                                "content": Sandra_response})
+    conversation_history.append(
+        {"role": "assistant",
+         "content": Sandra_response})
     while True:
         user_input = input(Sandra_response)
         if user_input:
-            Sandra_response = agentic_answer(conversation_history, user_input, openai_client)
-            # Print the last message in conversation which is supposed to be SAndra's. 
+            Sandra_response = agentic_answer(
+                conversation_history, user_input, openai_client)
+            # Print the last message in conversation which is supposed to be SAndra's.
             print(f"Sandra: {Sandra_response}")
             # speak(Sandra_response)
-            
+
             if Sandra_response == "End conversation":
                 break
-

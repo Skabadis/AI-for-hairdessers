@@ -1,37 +1,29 @@
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-import datetime
 from google_calendar_api.get_credentials import get_credentials
 
-def add_event(event):
-  try:
-    creds = get_credentials()
-    service = build("calendar", "v3", credentials=creds)
 
-    # Call the Calendar API
-    event = service.events().insert(calendarId='primary', body=event).execute()
-    print('Event created: %s' % (event.get('htmlLink')))
-    
-  except HttpError as error:
-    print(f"An error occurred: {error}")
-    
-    
+def add_event(event):
+    try:
+        creds = get_credentials()
+        service = build("calendar", "v3", credentials=creds)
+
+        # Call the Calendar API
+        event = service.events().insert(calendarId='primary', body=event).execute()
+        print('Event created: %s' % (event.get('htmlLink')))
+
+    except HttpError as error:
+        print(f"An error occurred: {error}")
+
+
 if __name__ == "__main__":
-    event = {'summary': 'Skandere Sahli - 0651164070', 
-             'description': 'Coupe de cheveux pour femme', 
-             'start': {'dateTime': '2024-05-28T14:00:00+02:00', 'timeZone': 'Europe/Paris'}, 
-              'end': {'dateTime': '2024-05-28T14:30:00', 'timeZone': 'Europe/Paris'}}
+    event = {'summary': 'Skandere Sahli - 0651164070',
+             'description': 'Coupe de cheveux pour femme',
+             'start': {'dateTime': '2024-05-28T14:00:00+02:00', 'timeZone': 'Europe/Paris'},
+             'end': {'dateTime': '2024-05-28T14:30:00', 'timeZone': 'Europe/Paris'}}
     add_event(event)
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
 # event = {
 #                 'summary': 'Rdv - Skandere ajouté automatiquement',
 #               #   'location': '800 Howard St., San Francisco, CA 94103',
