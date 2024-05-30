@@ -29,20 +29,6 @@ app.logger.info(f"Open AI client retrieved properly")
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
-@app.route("/voice", methods=['GET', 'POST'])
-def voice():
-    """Respond to incoming calls with a simple message."""
-    app.logger.info("Received a call request at /voice")
-    resp = VoiceResponse()
-
-    # Welcome message
-    resp.say(parameters["discussion"]['welcome_message'], voice='alice', language='fr-FR')
-
-    # Redirect to handle the call
-    resp.redirect("/handle_call")
-
-    return str(resp)
-
 @app.route("/handle_call", methods=['GET', 'POST'])
 def handle_call():
     app.logger.info("Handling call at /handle_call")
@@ -71,6 +57,7 @@ def process_input():
     try:
         user_input = request.form.get('SpeechResult')
         app.logger.info(f"User said: {user_input}")
+        app.logger.info(f"Conversation history: {conversation_history}")
 
         if user_input:
             Sandra_response = agentic_answer(conversation_history, user_input, openai_client)
