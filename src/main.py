@@ -1,6 +1,6 @@
+from twilio.rest import Client
 from flask import Flask, request
 from twilio.twiml.voice_response import VoiceResponse, Gather
-from twilio.rest import Client
 from llms_connectors.openai_connector import get_openai_client, chat
 from utils.read_params import read_params
 from conversation.text_to_text import agentic_answer
@@ -31,9 +31,9 @@ def voice():
         user_input = request.form.get('SpeechResult')
         if user_input:
             app.logger.info(f"User said: {user_input}")
-            # conversation_history.append({"role": "user", "content": user_input})
+            conversation_history.append({"role": "user", "content": user_input})
             Sandra_response = agentic_answer(conversation_history, user_input, openai_client)
-            # conversation_history.append({"role": "assistant", "content": Sandra_response})
+            conversation_history.append({"role": "assistant", "content": Sandra_response})
         else:
             # Initialize the AI conversation if no input is present
             Sandra_response = chat(conversation_history, openai_client)
