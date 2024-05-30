@@ -1,7 +1,7 @@
 # setup_commands.txt
 
-# 1. Connectez-vous à votre instance EC2
-ssh -i ~/Desktop/'Projet Isma'/AI-for-hairdessers/skabadis_aws_ec2.pem ubuntu@13.50.242.102
+# 1. Connectez-vous à votre instance EC2 avec la bonne adresse IP de l'instance après le @
+ssh -i ~/Desktop/'Projet Isma'/AI-for-hairdessers/skabadis_aws_ec2.pem ubuntu@13.53.120.94
 
 # 2. Naviguez vers le répertoire de votre projet
 cd ~/AI-for-hairdessers
@@ -12,10 +12,13 @@ source venv/bin/activate
 # 4. Installer les requirements
 pip install -r requirements.txt
 
-# 5. Connecter la clé OpenAI
-export OPENAI_API_KEY="votre_clé_api_openai"
-
-
 # 5. Démarrez Gunicorn
 gunicorn --bind 0.0.0.0:8000 wsgi:app
 
+# 6. Si ça ne marche pas, redémarrez gunicorn
+sudo systemctl daemon-reload
+sudo systemctl restart gunicorn
+sudo systemctl restart nginx
+
+# 7. Regardez le journal des logs gunicorn
+sudo journalctl -u gunicorn -f
