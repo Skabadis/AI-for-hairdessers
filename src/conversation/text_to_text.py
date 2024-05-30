@@ -6,10 +6,10 @@ from utils.read_params import read_params
 import json
 import pandas as pd
 
-def get_events_workflow(Sandra_response, conversation_history):
-  print("This should be a JSON")
-  print(Sandra_response)  
-  date = json.loads(Sandra_response)['date']
+def get_events_workflow(json_input_str, conversation_history):
+  date = json.loads(json_input_str)['date']
+  print(f"Success, dictionary well converted: {date}")
+
   events_df = read_calendar(date)
   appointments = events_df[["event_start", "event_end"]]
   print(appointments)
