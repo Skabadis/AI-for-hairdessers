@@ -4,6 +4,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+import json
 
 def get_credentials():
     SCOPES = ["https://www.googleapis.com/auth/calendar"]
@@ -23,7 +24,7 @@ def get_credentials():
         else:
           load_dotenv()
           # Access API key
-          creds_dict = os.getenv('GGL_CAL_CREDS')
+          creds_dict = json.loads(os.getenv('GGL_CAL_CREDS'))
           print("Token not found. Creating new token.")
           flow = InstalledAppFlow.from_client_config(
               creds_dict, SCOPES
