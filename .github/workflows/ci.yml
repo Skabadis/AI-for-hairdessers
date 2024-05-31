@@ -43,3 +43,4 @@ jobs:
           echo GGL_CAL_CREDS=${{ secrets.GGL_CAL_CREDS }} >> .env
           sudo systemctl daemon-reload
           sudo systemctl restart gunicorn
+
