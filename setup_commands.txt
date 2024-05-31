@@ -1,8 +1,8 @@
 # setup_commands.txt
 
 # 1. Connectez-vous à votre instance EC2 avec la bonne adresse IP de l'instance après le @
-ssh -i ~/Desktop/'Projet Isma'/AI-for-hairdessers/skabadis_aws_ec2.pem ubuntu@13.53.120.94
-ssh -i C:\Users\Skandere\Workspace\AI-for-hairdessers\skabadis_aws_ec2.pem ubuntu@13.53.120.94
+ssh -i ~/Desktop/'Projet Isma'/AI-for-hairdessers/skabadis_aws_ec2.pem ubuntu@13.50.101.111
+ssh -i C:\Users\Skandere\Workspace\AI-for-hairdessers\skabadis_aws_ec2.pem ubuntu@13.50.101.111
 
 # 2. Naviguez vers le répertoire de votre projet
 cd ~/AI-for-hairdessers
