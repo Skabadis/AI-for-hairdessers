@@ -17,7 +17,6 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y python3-venv  # Install python3-venv package
-        python3 -m venv AI-for-hairdessers/venv  # Create virtual environment
 
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
@@ -27,6 +26,10 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           cd ~/AI-for-hairdessers
+          # Create virtual environment if it doesn't exist
+          if [ ! -d "venv" ]; then
+            python3 -m venv venv
+          fi
           source /venv/bin/activate  # Activate virtual environment
           git pull origin main
           python -m pip install --upgrade pip
