@@ -14,24 +14,15 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.12'
-
-    - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y ffmpeg libasound2-dev portaudio19-dev
+        sudo apt-get install -y python3-venv  # Install python3-venv package
+        cd ~/AI-for-hairdessers
+        python3 -m venv venv  # Create virtual environment
+        source venv/bin/activate  # Activate virtual environment
         python -m pip install --upgrade pip
+        git pull origin main
         pip install -r requirements.txt
-
-    - name: Create virtual environment
-      run: |
-        python3 -m venv AI-for-hairdessers/venv
-
-    - name: Activate virtual environment
-      run: |
-        source AI-for-hairdessers/venv/bin/activate
 
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
@@ -40,9 +31,6 @@ jobs:
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          cd ~/AI-for-hairdessers
-          git pull origin main
-          pip install -r requirements.txt
           echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} > .env
           echo TWILIO_ACCOUNT_SID=${{ secrets.TWILIO_ACCOUNT_SID }} >> .env
           echo TWILIO_AUTH_TOKEN=${{ secrets.TWILIO_AUTH_TOKEN }} >> .env
