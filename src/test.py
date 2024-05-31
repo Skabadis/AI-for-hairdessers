@@ -1,7 +1,4 @@
-from conversation.speech_to_text import listen
-from conversation.text_to_speech import speak
-from llms_connectors.openai_connector import get_openai_client, chat
-from google_calendar_api.read_calendar import read_calendar
+from llms_connectors.openai_connector import get_openai_client
 from utils.read_params import read_params
 from conversation.text_to_text import agentic_answer
 
