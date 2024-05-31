@@ -7,6 +7,7 @@ from conversation.text_to_text import agentic_answer
 from dotenv import load_dotenv
 import os
 import logging
+import signal
 
 app = Flask(__name__)
 
