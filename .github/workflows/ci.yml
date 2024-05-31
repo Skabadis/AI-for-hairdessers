@@ -17,12 +17,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y python3-venv  # Install python3-venv package
-        cd ~/AI-for-hairdessers
-        python3 -m venv venv  # Create virtual environment
-        source venv/bin/activate  # Activate virtual environment
-        python -m pip install --upgrade pip
-        git pull origin main
-        pip install -r requirements.txt
+        python3 -m venv AI-for-hairdessers/venv  # Create virtual environment
 
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
@@ -31,6 +26,11 @@ jobs:
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
+          cd ~/AI-for-hairdessers
+          source /venv/bin/activate  # Activate virtual environment
+          git pull origin main
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
           echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} > .env
           echo TWILIO_ACCOUNT_SID=${{ secrets.TWILIO_ACCOUNT_SID }} >> .env
           echo TWILIO_AUTH_TOKEN=${{ secrets.TWILIO_AUTH_TOKEN }} >> .env
