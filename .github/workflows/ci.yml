@@ -25,6 +25,14 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Create virtual environment
+      run: |
+        python3 -m venv AI-for-hairdessers/venv
+
+    - name: Activate virtual environment
+      run: |
+        source AI-for-hairdessers/venv/bin/activate
+
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
       with:
@@ -34,7 +42,6 @@ jobs:
         script: |
           cd ~/AI-for-hairdessers
           git pull origin main
-          source venv/bin/activate
           pip install -r requirements.txt
           echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} > .env
           echo TWILIO_ACCOUNT_SID=${{ secrets.TWILIO_ACCOUNT_SID }} >> .env
