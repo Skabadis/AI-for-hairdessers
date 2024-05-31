@@ -22,6 +22,12 @@ openai_client = get_openai_client()
 
 app.logger.info("OpenAI client retrieved properly")
 
+def shutdown_worker():
+    """Send a signal to stop the current worker."""
+    worker_pid = os.getpid()
+    app.logger.info(f"Shutting down worker with PID: {worker_pid}")
+    os.kill(worker_pid, signal.SIGTERM)
+
 @app.route("/voice", methods=['GET', 'POST'])
 def voice():
     resp = VoiceResponse()
@@ -38,6 +44,7 @@ def voice():
             Sandra_response = agentic_answer(conversation_history, user_input, openai_client)
             if Sandra_response.lower() == "end conversation":
                 resp.say("Au revoir", voice='alice', language='fr-FR')
+                shutdown_worker()  # Shutdown the worker at the end of the call
                 return str(resp)
         
         conversation_history.append({"role": "assistant", "content": Sandra_response})
