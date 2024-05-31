@@ -54,7 +54,7 @@ def voice():
         conversation_history.append({"role": "assistant", "content": Sandra_response})
         app.logger.info(f"Sandra's response: {Sandra_response}")
 
-        gather = Gather(input='speech', action='/voice', timeout=2, language='fr-FR')
+        gather = Gather(input='speech', action='/voice', timeout=4, language='fr-FR')
         gather.say(Sandra_response, voice='alice', language='fr-FR')
         resp.append(gather)
     except Exception as e:
