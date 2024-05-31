@@ -12,7 +12,10 @@ import signal
 app = Flask(__name__)
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(filename='app.log', 
+                    level=logging.DEBUG, 
+                    format='%(asctime)s %(levelname)s: %(message)s', 
+                    datefmt='%Y-%m-%d %H:%M:%S')
 
 # Load parameters and initialize OpenAI client
 parameters = read_params()
