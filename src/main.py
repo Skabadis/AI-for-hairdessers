@@ -56,10 +56,11 @@ def voice():
 
         gather = Gather(input='speech', action='/voice', timeout=4, language='fr-FR')
         gather.say(Sandra_response, voice='alice', language='fr-FR')
+    
         resp.append(gather)
     except Exception as e:
         app.logger.error(f"Error: {e}")
-        resp.say("Une erreur est survenue. Veuillez réessayer plus tard.", voice='alice', language='fr-FR')
+        resp.say("Une erreur est survenue. Veuillez réessayer plus tard.", voice='Polly.Mathieu-Neural', language='fr-FR')
 
     return str(resp)
 
