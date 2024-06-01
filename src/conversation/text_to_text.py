@@ -9,11 +9,11 @@ import logging
 
 def get_events_workflow(json_input_str, conversation_history):
   date = json.loads(json_input_str)['date']
-  logging.debug(f"Success, dictionary well converted: {date}")
+  logging.info(f"Success, dictionary well converted: {date}")
 
   events_df = read_calendar(date)
   appointments = events_df[["event_start", "event_end"]]
-  logging.debug(appointments)
+  logging.info(appointments)
 
   Sandra_response = get_open_slots_str(appointments, date)
   # Sandra_response = "Nous avons des disponibilités demain de 9h à 11h et de 13h à 15h"
@@ -23,7 +23,7 @@ def get_events_workflow(json_input_str, conversation_history):
 
 def save_event_workflow(json_input_str, conversation_history, params):
   event = json.loads(json_input_str)
-  logging.debug(f"Success, dictionary well converted: {event}")
+  logging.info(f"Success, dictionary well converted: {event}")
 
   start = event["start"]
   endTime = pd.Timestamp(start["dateTime"], tz=start["timeZone"]) + pd.Timedelta(minutes=30)
@@ -60,7 +60,7 @@ def agentic_answer(conversation_history, user_input, openai_client):
 
   # Read calendar workflow
   if ('regarde' in Sandra_response) and ('calendrier' in Sandra_response):
-      logging.debug("Regarde calendrier")
+      logging.info("Regarde calendrier")
       conversation_history.append({"role": "system", 
                                    "content": params["prompts"]["read_calendar_on_day_prompt"]})
       json_input_str = chat(conversation_history, openai_client)
@@ -68,12 +68,12 @@ def agentic_answer(conversation_history, user_input, openai_client):
         Sandra_response = get_events_workflow(json_input_str, conversation_history)
         return Sandra_response
       except Exception as e:
-        logging.debug(f"An error occurred when trying to get date to read calendar: {e}")
+        logging.info(f"An error occurred when trying to get date to read calendar: {e}")
         return params["discussion"]["error_message"]
   
   # Save event workflow
   if 'sauvegarde' in Sandra_response.lower():
-      logging.debug("Sauvegarde")
+      logging.info("Sauvegarde")
       conversation_history.append({"role": "system", 
                                    "content": params["prompts"]["write_event_prompt"]})
       json_input_str = chat(conversation_history, openai_client)
@@ -81,13 +81,13 @@ def agentic_answer(conversation_history, user_input, openai_client):
           Sandra_response = save_event_workflow(json_input_str, conversation_history, params)
           return Sandra_response
       except Exception as e:
-          logging.debug(f"An error occurred when trying to write event to calendar: {e}")
+          logging.info(f"An error occurred when trying to write event to calendar: {e}")
           return params["discussion"]["error_message"]
   
   # End conversation workflow        
   if 'au revoir' in Sandra_response.lower():
-    logging.debug(Sandra_response)
-    logging.debug("Au revoir")
+    logging.info(Sandra_response)
+    logging.info("Au revoir")
     return "End conversation"
   return Sandra_response
 

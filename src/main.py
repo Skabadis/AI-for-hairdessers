@@ -8,14 +8,9 @@ from dotenv import load_dotenv
 import os
 import logging
 import signal
+from datetime import datetime
 
 app = Flask(__name__)
-
-# Configure logging
-logging.basicConfig(filename='app.log', 
-                    level=logging.DEBUG, 
-                    format='%(asctime)s %(levelname)s: %(message)s', 
-                    datefmt='%Y-%m-%d %H:%M:%S')
 
 # Load parameters and initialize OpenAI client
 parameters = read_params()
@@ -65,6 +60,17 @@ def voice():
     return str(resp)
 
 if __name__ == "__main__":
+    if not os.path.exists('logs'):
+      os.makedirs('logs')
+    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    log_filename = f"logs/call_{current_time}.log"
+
+    # Configure logging
+    logging.basicConfig(filename=log_filename, 
+                        level=logging.INFO, 
+                        format='%(asctime)s %(levelname)s: %(message)s', 
+                        datefmt='%Y-%m-%d %H:%M:%S')
+    
     try:
         app.logger.info("Parameters loaded successfully")
 
