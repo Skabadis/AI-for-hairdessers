@@ -1,14 +1,14 @@
 from flask import Flask, request
 from twilio.twiml.voice_response import VoiceResponse, Gather
 from twilio.rest import Client
-from llms_connectors.openai_connector import get_openai_client, chat
+from llms_connectors.openai_connector import get_openai_client
 from utils.read_params import read_params
 from conversation.text_to_text import agentic_answer
 from dotenv import load_dotenv
 import os
-import logging
 import signal
-from datetime import datetime
+# Runs logging_config.py file which sets up the logs
+import utils.logging_config
 
 app = Flask(__name__)
 
@@ -24,7 +24,7 @@ app.logger.info("OpenAI client retrieved properly")
 def shutdown_worker():
     """Send a signal to stop the current worker."""
     worker_pid = os.getpid()
-    app.logger.info(f"Shutting down worker with PID: {worker_pid}")
+    app.logger.info(f"Shutting down worker because shutdown_worker function was called. PID: {worker_pid}")
     os.kill(worker_pid, signal.SIGTERM)
 
 @app.route("/voice", methods=['GET', 'POST'])
@@ -60,16 +60,16 @@ def voice():
     return str(resp)
 
 if __name__ == "__main__":
-    if not os.path.exists('logs'):
-      os.makedirs('logs')
-    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    log_filename = f"logs/call_{current_time}.log"
+    # if not os.path.exists('logs'):
+    #   os.makedirs('logs')
+    # current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    # log_filename = f"logs/call_{current_time}.log"
 
-    # Configure logging
-    logging.basicConfig(filename=log_filename, 
-                        level=logging.INFO, 
-                        format='%(asctime)s %(levelname)s: %(message)s', 
-                        datefmt='%Y-%m-%d %H:%M:%S')
+    # # Configure logging
+    # logging.basicConfig(filename=log_filename, 
+    #                     level=logging.INFO, 
+    #                     format='%(asctime)s %(levelname)s: %(message)s', 
+    #                     datefmt='%Y-%m-%d %H:%M:%S')
     
     try:
         app.logger.info("Parameters loaded successfully")
