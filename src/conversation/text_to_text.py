@@ -64,6 +64,7 @@ def agentic_answer(conversation_history, user_input, openai_client):
       conversation_history.append({"role": "system", 
                                    "content": params["prompts"]["read_calendar_on_day_prompt"]})
       json_input_str = chat(conversation_history, openai_client)
+      logging.info(json_input_str)
       try:
         Sandra_response = get_events_workflow(json_input_str, conversation_history)
         return Sandra_response
@@ -77,6 +78,7 @@ def agentic_answer(conversation_history, user_input, openai_client):
       conversation_history.append({"role": "system", 
                                    "content": params["prompts"]["write_event_prompt"]})
       json_input_str = chat(conversation_history, openai_client)
+      logging.info(f"This is supposed to be a JSON:\n {json_input_str}")
       try:
           Sandra_response = save_event_workflow(json_input_str, conversation_history, params)
           return Sandra_response
