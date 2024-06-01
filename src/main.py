@@ -59,7 +59,7 @@ def voice():
 
     return str(resp)
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
     # if not os.path.exists('logs'):
     #   os.makedirs('logs')
     # current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -71,16 +71,16 @@ if __name__ == "__main__":
     #                     format='%(asctime)s %(levelname)s: %(message)s', 
     #                     datefmt='%Y-%m-%d %H:%M:%S')
     
-    try:
-        app.logger.info("Parameters loaded successfully")
+    # try:
+    #     app.logger.info("Parameters loaded successfully")
 
-        # Load Twilio credentials from .env
-        load_dotenv()
-        account_sid = os.getenv('TWILIO_ACCOUNT_SID')
-        auth_token = os.getenv('TWILIO_AUTH_TOKEN')
-        app.logger.info(f"Twilio SID: {account_sid}")
+    #     # Load Twilio credentials from .env
+    #     load_dotenv()
+    #     account_sid = os.getenv('TWILIO_ACCOUNT_SID')
+    #     auth_token = os.getenv('TWILIO_AUTH_TOKEN')
+    #     app.logger.info(f"Twilio SID: {account_sid}")
 
-        client = Client(account_sid, auth_token)
-        app.run(debug=True, host='0.0.0.0', port=8000)
-    except Exception as e:
-        app.logger.error(f"Failed to start the application: {e}")
+    #     client = Client(account_sid, auth_token)
+    #     app.run(debug=True, host='0.0.0.0', port=8000)
+    # except Exception as e:
+    #     app.logger.error(f"Failed to start the application: {e}")
