@@ -66,5 +66,9 @@ discussion:
   
   event_saved_message: |
     Votre rendez-vous est bien confirmé! Merci beaucoup pour votre appel. Est ce que je peux faire autre chose pour vous?
+
   error_message: |
     Une erreur inconnue est survenue, veuillez essayer de rappeler.
+  
+  no_user_input_message: |
+    Je n'ai pas entendu votre réponse. Pouvez-vous répéter?

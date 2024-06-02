@@ -1,35 +1,50 @@
 from flask import Flask, request
 from twilio.twiml.voice_response import VoiceResponse, Gather
-from twilio.rest import Client
 from llms_connectors.openai_connector import get_openai_client
 from utils.read_params import read_params
 from conversation.text_to_text import agentic_answer
-import os
-import signal
-# Runs logging_config.py file which sets up the logs
+from workers.shutdown_worker import shutdown_worker
+# Runs logging_config.py file which sets up the logs - do not remove
 import utils.logging_config
 
 app = Flask(__name__)
 
-# Load parameters and initialize OpenAI client
-parameters = read_params()
-conversation_history = [
-    {"role": "system",
-        "content": parameters["prompts"]["conversation_initial_prompt"]}
-]
-openai_client = get_openai_client()
-
-app.logger.info("OpenAI client retrieved properly")
+# Initialize global variables
+parameters = None
+conversation_history = None
+openai_client = None
 
 
-def shutdown_worker():
-    """Send a signal to stop the current worker."""
-    worker_pid = os.getpid()
+@app.route("/initialize", methods=['GET', 'POST'])
+def initialize():
+    global parameters, conversation_history, openai_client
+
+    # Load parameters
+    parameters = read_params()
+    app.logger.info(f"Parameters retrieved properly: {parameters}")
+
+    # Provide conversation prompt
+    conversation_history = [
+        {"role": "system",
+            "content": parameters["prompts"]["conversation_initial_prompt"]}
+    ]
     app.logger.info(
-        f"Shutting down worker because shutdown_worker function was called. PID: {worker_pid}")
-    os.kill(worker_pid, signal.SIGTERM)
+        f"Conversation history retrieved properly: len = {len(conversation_history)}")
 
-# TODO: Call still hangs up if there is no user_input detected. The if not user_input didnt fix it. More digging to be done
+    # Get OpenAI client
+    openai_client = get_openai_client()
+    app.logger.info(f"OpenAI client retrieved properly: {openai_client}")
+
+    # Prepare initial response with Gather to start the conversation
+    resp = VoiceResponse()
+    Sandra_response = parameters['discussion']['welcome_message']
+    conversation_history.append(
+        {"role": "assistant", "content": Sandra_response})
+    gather = Gather(input='speech', action='/voice', speechTimeout='auto',
+                    language='fr-FR', actionOnEmptyResult=True)
+    gather.say(Sandra_response, voice='Polly.Lea-Neural', language='fr-FR')
+    resp.append(gather)
+    return str(resp)
 
 
 @app.route("/voice", methods=['GET', 'POST'])
@@ -41,32 +56,29 @@ def voice():
         user_input = request.form.get('SpeechResult')
         app.logger.info(f"User said: {user_input}")
 
-        # Initial interaction or no user input detected
-        if not user_input:
-            if len(conversation_history) == 1:  # First interaction
-                Sandra_response = parameters['discussion']['welcome_message']
-            else:  # No response during conversation
-                Sandra_response = "Je n'ai pas entendu votre réponse. Pouvez-vous répéter?"
-
-            conversation_history.append(
-                {"role": "assistant", "content": Sandra_response})
-        # User input detected, regular conversation
-        else:
+        # Get Sandra_response
+        if not user_input:  # If no user input detected say no user input message
+            Sandra_response = parameters['discussion']['no_user_input_message']
+        else:  # If user input detected, regular conversation
             conversation_history.append(
                 {"role": "user", "content": user_input})
             Sandra_response = agentic_answer(
                 conversation_history, user_input, openai_client)
-            if Sandra_response.lower() == "end conversation":
-                # Use alice to save cost, Polly.Lea-Neural for the best one
-                resp.say("Au revoir", voice='Polly.Lea-Neural',
-                         language='fr-FR')
-                # Shutdown the worker at the end of the call
-                shutdown_worker()
-                return str(resp)
 
+        # Add Sandra_reponse to conversation history
         conversation_history.append(
             {"role": "assistant", "content": Sandra_response})
         app.logger.info(f"Sandra's response: {Sandra_response}")
+
+        # Case when end of conversation
+        # TODO: improve to have the worker start and shutdown based call start and end
+        if Sandra_response.lower() == "end conversation":
+            # Use alice to save cost, Polly.Lea-Neural for the best one
+            resp.say("Au revoir", voice='Polly.Lea-Neural',
+                     language='fr-FR')
+            # Shutdown the worker at the end of the call
+            shutdown_worker()
+            return str(resp)
 
         gather = Gather(input='speech', action='/voice',
                         speechTimeout='auto', language='fr-FR', actionOnEmptyResult=True)
