@@ -29,6 +29,8 @@ def shutdown_worker():
         f"Shutting down worker because shutdown_worker function was called. PID: {worker_pid}")
     os.kill(worker_pid, signal.SIGTERM)
 
+# TODO: Call still hangs up if there is no user_input detected. The if not user_input didnt fix it. More digging to be done
+
 
 @app.route("/voice", methods=['GET', 'POST'])
 def voice():
@@ -59,7 +61,7 @@ def voice():
                 resp.say("Au revoir", voice='Polly.Lea-Neural',
                          language='fr-FR')
                 # Shutdown the worker at the end of the call
-                shutdown_worker()  
+                shutdown_worker()
                 return str(resp)
 
         conversation_history.append(
@@ -67,7 +69,7 @@ def voice():
         app.logger.info(f"Sandra's response: {Sandra_response}")
 
         gather = Gather(input='speech', action='/voice',
-                        speechTimeout='auto', language='fr-FR')
+                        speechTimeout='auto', language='fr-FR', actionOnEmptyResult=True)
         # Use alice to save cost, Polly.Lea-Neural for the best one
         gather.say(Sandra_response, voice='Polly.Lea-Neural', language='fr-FR')
 
