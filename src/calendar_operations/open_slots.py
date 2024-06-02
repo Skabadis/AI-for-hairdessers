@@ -60,10 +60,10 @@ def get_open_slots(appointments, day, opening_time, closing_time, freq, duration
 
 def convert_open_slots_to_str(open_slots):
   # Get start and end of available time windows in string, only get start if there is only one time available in the window
-  availabilities_string = [f"{convert_dt_to_time_str(x[0])} a {convert_dt_to_time_str(x[1])}" if x[0] != x[1] else f"{convert_dt_to_time_str(x[0])}" for x in open_slots[['time_min', 'time_max']].values]
+  availabilities_string = [f"de {convert_dt_to_time_str(x[0])} a {convert_dt_to_time_str(x[1])}" if x[0] != x[1] else f"a {convert_dt_to_time_str(x[0])}" for x in open_slots[['time_min', 'time_max']].values]
 
   availabilities_string = ' , '.join(availabilities_string)
-  return f'Nous avons des disponibilites a {availabilities_string}'
+  return f'Nous avons des disponibilites {availabilities_string}'
 
 def get_open_slots_str(appointments, day, opening_time="09:00:00", closing_time="17:00:00", freq='30min', duration=30):
     open_slots = get_open_slots(appointments, day, opening_time=opening_time, closing_time=closing_time, freq=freq, duration=duration)
