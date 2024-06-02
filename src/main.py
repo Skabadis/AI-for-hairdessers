@@ -37,22 +37,28 @@ def voice():
     try:
         user_input = request.form.get('SpeechResult')
         app.logger.info(f"User said: {user_input}")
-        if not user_input:  # If no user input, ask to repeat
-            gather_fallback = Gather(
-                input='speech', action='/voice', speechTimeout='auto', language='fr-FR')
-            gather_fallback.say("Je n'ai pas entendu votre réponse, pouvez-vous répétez s'il-vous-plait?",
-                                voice='Polly.Lea-Neural', language='fr-FR')
-            resp.append(gather_fallback)
+
+        # Initial interaction or no user input detected
+        if not user_input:
+            if len(conversation_history) == 1:  # First interaction
+                Sandra_response = parameters['discussion']['welcome_message']
+            else:  # No response during conversation
+                Sandra_response = "Je n'ai pas entendu votre réponse. Pouvez-vous répéter?"
+
+            conversation_history.append(
+                {"role": "assistant", "content": Sandra_response})
+        # User input detected, regular conversation
         else:
             conversation_history.append(
                 {"role": "user", "content": user_input})
             Sandra_response = agentic_answer(
                 conversation_history, user_input, openai_client)
             if Sandra_response.lower() == "end conversation":
-                # use alice to save cost, Polly.Lea-Neural for the best one
+                # Use alice to save cost, Polly.Lea-Neural for the best one
                 resp.say("Au revoir", voice='Polly.Lea-Neural',
                          language='fr-FR')
-                shutdown_worker()  # Shutdown the worker at the end of the call
+                # Shutdown the worker at the end of the call
+                shutdown_worker()  
                 return str(resp)
 
         conversation_history.append(
@@ -61,7 +67,7 @@ def voice():
 
         gather = Gather(input='speech', action='/voice',
                         speechTimeout='auto', language='fr-FR')
-        # use alice to save cost, Polly.Lea-Neural for the best one
+        # Use alice to save cost, Polly.Lea-Neural for the best one
         gather.say(Sandra_response, voice='Polly.Lea-Neural', language='fr-FR')
 
         resp.append(gather)
