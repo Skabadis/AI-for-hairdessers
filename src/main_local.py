@@ -4,6 +4,8 @@ from llms_connectors.openai_connector import get_openai_client, chat
 from google_calendar_api.read_calendar import read_calendar
 from utils.read_params import read_params
 from conversation.text_to_text import agentic_answer
+import utils.logging_config
+import logging
 
 """
    Current issues:
@@ -28,6 +30,7 @@ if __name__ == "__main__":
                                 {"role": "assistant", 
                                 "content": Sandra_response})
     print(Sandra_response)
+    logging.info(Sandra_response)
     speak(Sandra_response)
     
     while True:
@@ -39,6 +42,7 @@ if __name__ == "__main__":
             Sandra_response = agentic_answer(conversation_history, user_input, openai_client)
             # Print the last message in conversation which is supposed to be SAndra's. 
             print(f"Sandra: {Sandra_response}")
+            logging.info(Sandra_response)
             speak(Sandra_response)
             
 

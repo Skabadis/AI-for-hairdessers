@@ -1,6 +1,7 @@
 from llms_connectors.openai_connector import get_openai_client
 from utils.read_params import read_params
 from conversation.text_to_text import agentic_answer
+import utils.logging_config
 
 """
    Current issues:
