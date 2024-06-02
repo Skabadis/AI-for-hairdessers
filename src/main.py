@@ -15,17 +15,21 @@ app = Flask(__name__)
 # Load parameters and initialize OpenAI client
 parameters = read_params()
 conversation_history = [
-    {"role": "system", "content": parameters["prompts"]["conversation_initial_prompt"]}
+    {"role": "system",
+        "content": parameters["prompts"]["conversation_initial_prompt"]}
 ]
 openai_client = get_openai_client()
 
 app.logger.info("OpenAI client retrieved properly")
 
+
 def shutdown_worker():
     """Send a signal to stop the current worker."""
     worker_pid = os.getpid()
-    app.logger.info(f"Shutting down worker because shutdown_worker function was called. PID: {worker_pid}")
+    app.logger.info(
+        f"Shutting down worker because shutdown_worker function was called. PID: {worker_pid}")
     os.kill(worker_pid, signal.SIGTERM)
+
 
 @app.route("/voice", methods=['GET', 'POST'])
 def voice():
@@ -33,29 +37,38 @@ def voice():
 
     try:
         user_input = request.form.get('SpeechResult')
-        
+
         if not user_input:  # If no user input, provide the initial response
             Sandra_response = parameters['discussion']['welcome_message']
-            conversation_history.append({"role": "assistant", "content": Sandra_response})
+            conversation_history.append(
+                {"role": "assistant", "content": Sandra_response})
         else:
             app.logger.info(f"User said: {user_input}")
-            conversation_history.append({"role": "user", "content": user_input})
-            Sandra_response = agentic_answer(conversation_history, user_input, openai_client)
+            conversation_history.append(
+                {"role": "user", "content": user_input})
+            Sandra_response = agentic_answer(
+                conversation_history, user_input, openai_client)
             if Sandra_response.lower() == "end conversation":
-                resp.say("Au revoir", voice='Polly.Lea-Neural', language='fr-FR') # use alice to save cost, Polly.Lea-Neural for the best one
+                # use alice to save cost, Polly.Lea-Neural for the best one
+                resp.say("Au revoir", voice='Polly.Lea-Neural',
+                         language='fr-FR')
                 shutdown_worker()  # Shutdown the worker at the end of the call
                 return str(resp)
-        
-        conversation_history.append({"role": "assistant", "content": Sandra_response})
+
+        conversation_history.append(
+            {"role": "assistant", "content": Sandra_response})
         app.logger.info(f"Sandra's response: {Sandra_response}")
 
-        gather = Gather(input='speech', action='/voice', timeout=4, language='fr-FR')
-        gather.say(Sandra_response, voice='Polly.Lea-Neural', language='fr-FR') # use alice to save cost, Polly.Lea-Neural for the best one
-    
+        gather = Gather(input='speech', action='/voice',
+                        speechTimeout='auto', language='fr-FR')
+        # use alice to save cost, Polly.Lea-Neural for the best one
+        gather.say(Sandra_response, voice='Polly.Lea-Neural', language='fr-FR')
+
         resp.append(gather)
     except Exception as e:
         app.logger.error(f"Error: {e}")
-        resp.say("Une erreur est survenue. Veuillez réessayer plus tard.", voice='Polly.Lea-Neural', language='fr-FR') # use alice to save cost, Polly.Lea-Neural for the best one
+        resp.say("Une erreur est survenue. Veuillez réessayer plus tard.", voice='Polly.Lea-Neural',
+                 language='fr-FR')  # use alice to save cost, Polly.Lea-Neural for the best one
 
     return str(resp)
 
@@ -66,11 +79,11 @@ def voice():
     # log_filename = f"logs/call_{current_time}.log"
 
     # # Configure logging
-    # logging.basicConfig(filename=log_filename, 
-    #                     level=logging.INFO, 
-    #                     format='%(asctime)s %(levelname)s: %(message)s', 
+    # logging.basicConfig(filename=log_filename,
+    #                     level=logging.INFO,
+    #                     format='%(asctime)s %(levelname)s: %(message)s',
     #                     datefmt='%Y-%m-%d %H:%M:%S')
-    
+
     # try:
     #     app.logger.info("Parameters loaded successfully")
 
