@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - skandere/improve-STT
 
 jobs:
   deploy:
@@ -12,6 +13,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+      with: 
+        ref: ${{ github.ref_name }}  # Checkout the triggering branch
 
     - name: Set up Python
       run: |
@@ -31,7 +34,7 @@ jobs:
             python3 -m venv venv
           fi
           source venv/bin/activate  # Activate virtual environment
-          git pull origin main
+          git pull origin ${{ github.ref_name }}  # Pull changes from the triggering branch
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} > .env
