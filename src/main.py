@@ -21,7 +21,7 @@ def initialize():
 
     # Load parameters
     parameters = read_params()
-    app.logger.info(f"Parameters retrieved properly: {parameters}")
+    app.logger.info(f"Parameters retrieved properly")
 
     # Provide conversation prompt
     conversation_history = [
