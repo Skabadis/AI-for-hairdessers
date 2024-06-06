@@ -4,6 +4,7 @@ from llms_connectors.openai_connector import get_openai_client
 from utils.read_params import read_params
 from conversation.text_to_text import agentic_answer
 from workers.shutdown_worker import shutdown_worker
+from google.cloud import speech
 # Runs logging_config.py file which sets up the logs - do not remove
 import utils.logging_config
 
@@ -92,3 +93,33 @@ def voice():
                  language='fr-FR')  # use alice to save cost, Polly.Lea-Neural for the best one
 
     return str(resp)
+
+
+@app.route("/recording", methods=['POST'])
+def handle_recording():
+    recording_url = request.form['RecordingUrl']
+    transcription = transcribe_audio(recording_url)
+    return transcription
+
+def transcribe_audio(recording_url):
+    # Download the audio file content
+    audio_data = request.get(recording_url).content
+
+    # Transcribe using Google Cloud Speech-to-Text directly from memory
+    client = speech.SpeechClient()
+    
+    audio = speech.RecognitionAudio(content=audio_data)
+    config = speech.RecognitionConfig(
+        encoding=speech.RecognitionConfig.AudioEncoding.MULAW,
+        sample_rate_hertz=8000,
+        language_code="fr-FR"
+    )
+
+    response = client.recognize(config=config, audio=audio)
+
+    # Process the response
+    transcription = ""
+    for result in response.results:
+        transcription += result.alternatives[0].transcript
+
+    return transcription
