@@ -49,6 +49,9 @@ prompts:
 discussion: 
   welcome_message: |
     Bonjour, bienvenue chez Suzuki Paris Pyrenees Automobiles. Je suis Sandra, l'assistante I.A. de prise de rendez-vous. Comment puis-je vous aider?
+
+  availability_message: |
+    Le {} nous avons des disponibilités {}
   
   event_saved_message: |
     Votre rendez-vous est bien confirmé! Merci beaucoup pour votre appel. Est ce que je peux faire autre chose pour vous?

@@ -1,11 +1,11 @@
-from utils.utils import convert_dt_to_date_short_str, convert_dt_to_date_long_str
+from utils.utils import convert_dt_to_date_short_str, convert_dt_to_date_long_str, convert_dt_to_date_long_no_year_str
 from datetime import datetime, timedelta
 import locale
 
 
 def format_read_calendar_prompt(prompt):
     # Set the locale to French
-    locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8')
+    locale.setlocale(locale.LC_TIME, 'fr_FR')
 
     # Get today's date
     today = datetime.now()
@@ -23,3 +23,8 @@ def format_read_calendar_prompt(prompt):
     prompt_formatted = prompt.format(
         today_long_str, today_short_str, tomorrow_long_str, tomorrow_short_str, after_tomorrow_long_str, after_tomorrow_short_str)
     return prompt_formatted
+
+
+def format_availability_message(message, date, availabilities_string):
+    locale.setlocale(locale.LC_TIME, 'fr_FR')
+    return message.format(convert_dt_to_date_long_no_year_str(date), availabilities_string)

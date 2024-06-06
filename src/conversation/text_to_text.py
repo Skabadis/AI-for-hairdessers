@@ -3,13 +3,13 @@ from google_calendar_api.read_calendar import read_calendar
 from google_calendar_api.write_event import add_event
 from calendar_operations.open_slots import get_open_slots_str
 from utils.read_params import read_params
-from utils.parameters_formatter import format_read_calendar_prompt
+from utils.parameters_formatter import format_read_calendar_prompt, format_availability_message
 import json
 import pandas as pd
 import logging
 
 
-def get_events_workflow(json_input_str, conversation_history):
+def get_events_workflow(json_input_str, conversation_history, params):
     date = json.loads(json_input_str)['date']
     logging.info(f"Success, dictionary well converted: {date}")
 
@@ -17,8 +17,11 @@ def get_events_workflow(json_input_str, conversation_history):
     appointments = events_df[["event_start", "event_end"]]
     logging.info(appointments)
 
-    Sandra_response = get_open_slots_str(appointments, date)
-    # Sandra_response = "Nous avons des disponibilités demain de 9h à 11h et de 13h à 15h"
+    availabilities_string = get_open_slots_str(appointments, date)
+    message = params["discussion"]["availability_message"]
+
+    Sandra_response = format_availability_message(
+        message, date, availabilities_string)
     conversation_history.append(
         {"role": "assistant", "content": Sandra_response})
     return Sandra_response
@@ -77,7 +80,7 @@ def agentic_answer(conversation_history, user_input, openai_client):
         logging.info(json_input_str)
         try:
             Sandra_response = get_events_workflow(
-                json_input_str, conversation_history)
+                json_input_str, conversation_history, params)
             return Sandra_response
         except Exception as e:
             logging.info(

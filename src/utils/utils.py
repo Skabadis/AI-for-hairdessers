@@ -8,3 +8,6 @@ def convert_dt_to_date_short_str(datetime):
 
 def convert_dt_to_date_long_str(datetime):
     return pd.Timestamp(datetime).date().strftime("%d %B, %Y")
+
+def convert_dt_to_date_long_no_year_str(datetime):
+    return pd.Timestamp(datetime).date().strftime("%d %B")
