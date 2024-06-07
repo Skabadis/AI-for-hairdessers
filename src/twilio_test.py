@@ -15,7 +15,7 @@ def initialize():
     resp = VoiceResponse()
     gather = Gather(input='speech', action='/voice', speechTimeout='auto',
                     language='fr-FR', actionOnEmptyResult=True)
-    gather.say("Ceci est un test", voice='Polly.Lea-Neural', language='fr-FR')
+    gather.say("Ceci est un test", voice='alice', language='fr-FR')
     resp.append(gather)
     return str(resp)
 
@@ -32,7 +32,7 @@ def voice():
     resp = VoiceResponse()
     gather = Gather(input='speech', action='/voice', speechTimeout='auto',
                     language='fr-FR', actionOnEmptyResult=True)
-    gather.say("Ceci est un test", voice='Polly.Lea-Neural', language='fr-FR')
+    gather.say("Ceci est un test", voice='alice', language='fr-FR')
     resp.append(gather)
     return str(resp)
 
