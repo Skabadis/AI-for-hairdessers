@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - skandere/pivot-dealerships
+      - skandere/improve-logs
 
 jobs:
   deploy:
