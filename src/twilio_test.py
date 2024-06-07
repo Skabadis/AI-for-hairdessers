@@ -21,7 +21,7 @@ def initialize():
 
 @app.route("/voice", methods=['GET', 'POST'])
 def voice():
-    
+    logging.info(f"Request values: {request.values}")
     recording_url = request.values.get('RecordingUrl', None)
     if recording_url:
         logging.info(f'Recording URL: {recording_url}')
