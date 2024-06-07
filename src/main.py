@@ -17,7 +17,10 @@ openai_client = None
 
 @app.before_request
 def before_request():
-    initialize_logger()
+    call_sid = request.values.get('CallSid')
+    call_status = request.values.get('CallStatus')
+    if call_sid and call_status == 'initiated':
+        initialize_logger(call_sid)
     logging.info(f"New request from {request.remote_addr}")
 
 @app.route("/initialize", methods=['GET', 'POST'])

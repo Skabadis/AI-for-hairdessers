@@ -27,7 +27,7 @@ import pytz
 # logger.addHandler(handler)
 
 
-def initialize_logger():
+def initialize_logger(call_sid):
     # Ensure the logs directory exists
     if not os.path.exists('logs'):
         os.makedirs('logs')
@@ -35,7 +35,7 @@ def initialize_logger():
     # Create a unique log file name based on the current date and time
     ny_tz = pytz.timezone('America/New_York')
     current_time = datetime.now(ny_tz).strftime("%Y-%m-%d__%H-%M-%S")
-    log_filename = f"logs/call_{current_time}.log"
+    log_filename = f"logs/call_{current_time}_{call_sid}.log"
 
     # Set up the log handler
     handler = RotatingFileHandler(log_filename, maxBytes=10000, backupCount=10)
