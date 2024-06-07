@@ -1,5 +1,5 @@
 from flask import Flask, request
-from twilio.twiml.voice_response import VoiceResponse, Gather
+from twilio.twiml.voice_response import VoiceResponse, Gather, Record
 # Runs logging_config.py file which sets up the logs - do not remove
 from utils.logging_config import initialize_logger
 import logging
@@ -30,7 +30,7 @@ def voice():
     else:
         logging.info("No recording URL")
     resp = VoiceResponse()
-    gather = Gather(input='speech', action='/voice', speechTimeout='auto',
+    gather = Record(input='speech', action='/voice', speechTimeout='auto',
                     language='fr-FR', actionOnEmptyResult=True)
     gather.say("Ceci est un test", voice='alice', language='fr-FR')
     resp.append(gather)
