@@ -69,7 +69,6 @@ def voice():
         # Add Sandra_reponse to conversation history
         conversation_history.append(
             {"role": "assistant", "content": Sandra_response})
-        app.logger.info(f"Sandra's response: {Sandra_response}")
 
         # Case when end of conversation
         # TODO: improve to have the worker start and shutdown based call start and end
@@ -85,6 +84,7 @@ def voice():
                         speechTimeout='auto', language='fr-FR', actionOnEmptyResult=True)
         # Use alice to save cost, Polly.Lea-Neural for the best one
         gather.say(Sandra_response, voice='Polly.Lea-Neural', language='fr-FR')
+        app.logger.info(f"Sandra's response: {Sandra_response}")
 
         resp.append(gather)
     except Exception as e:

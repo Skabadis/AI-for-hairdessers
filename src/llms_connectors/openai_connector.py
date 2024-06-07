@@ -7,7 +7,6 @@ def get_openai_client():
     load_dotenv()
     # Access API key
     openai_api_key = os.getenv('OPENAI_API_KEY')
-    print(f"OpenAI API Key: {openai_api_key}")  # Ligne de débogage
     if not openai_api_key:
         raise ValueError("The OpenAI API key must be set")
     # Connect to OpenAI

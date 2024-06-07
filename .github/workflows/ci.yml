@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - skandere/improve-STT
+      - skandere/pivot-dealerships
 
 jobs:
   deploy:
@@ -43,5 +43,6 @@ jobs:
           echo GGL_CAL_CREDS=${{ secrets.GGL_CAL_CREDS }} >> .env
           sudo systemctl daemon-reload
           sudo systemctl restart gunicorn
+
 
 
