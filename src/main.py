@@ -18,15 +18,17 @@ openai_client = None
 @app.before_request
 def before_request():
     call_sid = request.values.get('CallSid')
-    call_status = request.values.get('CallStatus')
-    if call_sid and call_status == 'initiated':
+    if call_sid:
         initialize_logger(call_sid)
+        call_status = request.values.get('CallStatus')
+        logging.info(f"Call status in before_request {call_status}")
     logging.info(f"New request from {request.remote_addr}")
 
 @app.route("/initialize", methods=['GET', 'POST'])
 def initialize():
     global parameters, conversation_history, openai_client
-
+    call_status = request.values.get('CallStatus')
+    logging.info(f"Call status in /initialize {call_status}")
     # Load parameters
     parameters = read_params()
     logging.info(f"Parameters retrieved properly")
@@ -60,6 +62,8 @@ def voice():
     resp = VoiceResponse()
     # logging.info(f"Request parameters: {request.form}")
     # logging.info(f"VoiceResponse object: {resp}")
+    call_status = request.values.get('CallStatus')
+    logging.info(f"Call status in /voice {call_status}")
     try:
         user_input = request.form.get('SpeechResult')
         logging.info(f"User said: {user_input}")
