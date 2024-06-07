@@ -15,6 +15,7 @@ parameters = None
 conversation_history = None
 openai_client = None
 
+
 @app.route("/initialize", methods=['GET', 'POST'])
 def initialize():
     global parameters, conversation_history, openai_client
@@ -22,7 +23,7 @@ def initialize():
     call_sid = request.values.get('CallSid')
     if call_sid:
         initialize_logger(call_sid)
-        
+
     # Load parameters
     parameters = read_params()
     logging.info(f"Parameters retrieved properly")
