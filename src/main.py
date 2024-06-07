@@ -55,10 +55,6 @@ def initialize():
 @app.route("/voice", methods=['GET', 'POST'])
 def voice():
     resp = VoiceResponse()
-    # logging.info(f"Request parameters: {request.form}")
-    # logging.info(f"VoiceResponse object: {resp}")
-    call_status = request.values.get('CallStatus')
-    logging.info(f"Call status in /voice {call_status}")
     try:
         user_input = request.form.get('SpeechResult')
         logging.info(f"User said: {user_input}")
