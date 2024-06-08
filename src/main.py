@@ -56,7 +56,7 @@ def initialize():
 def voice():
     resp = VoiceResponse()
     try:
-        user_input = request.form.get('SpeechResult')
+        user_input = request.values.get('SpeechResult')
         logging.info(f"User said: {user_input}")
 
         # Get Sandra_response
