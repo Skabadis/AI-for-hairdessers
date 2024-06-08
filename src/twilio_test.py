@@ -20,8 +20,7 @@ def initialize():
         initialize_logger(call_sid)
         # Prepare initial response with Gather to start the conversation
     resp = VoiceResponse()
-    record = Record(input='speech', action='/voice', speechTimeout='auto',
-                    language='fr-FR', actionOnEmptyResult=True, playBeep=False)
+    record = Record(action='/voice', timeout=1, playBeep=False)
     answer = Say("Ceci est un test", voice='alice', language='fr-FR')
     resp.append(answer)
     resp.append(record)
@@ -30,7 +29,7 @@ def initialize():
 
 @app.route("/voice", methods=['GET', 'POST'])
 def voice():
-    logging.info(f"Request values: {request.values}")
+    # logging.info(f"Request values: {request.values}")
     recording_url = request.values.get('RecordingUrl', None)
     if recording_url:
         logging.info(f'Recording URL: {recording_url}')
@@ -39,8 +38,7 @@ def voice():
     else:
         logging.info("No recording URL")
     resp = VoiceResponse()
-    record = Record(input='speech', action='/voice', speechTimeout='auto',
-                    language='fr-FR', actionOnEmptyResult=True, playBeep=False)
+    record = Record(action='/voice', timeout=1, playBeep=False)
     answer = Say("Ceci est un test", voice='alice', language='fr-FR')
     resp.append(answer)
     resp.append(record)
@@ -82,7 +80,7 @@ def transcribe_twilio_audio(recording_url):
     return "Recording URL not available after maximum attempts"
 
 
-# # Usage
-# recording_url = "https://api.twilio.com/2010-04-01/Accounts/{AccountSid}/Recordings/{RecordingSid}"
-# text = transcribe_twilio_audio(recording_url)
-# print("Transcribed text:", text)
+# Usage
+recording_url = "https://api.twilio.com/2010-04-01/Accounts/AC69b85da107ce00e7c961cd1bba79a197/Recordings/RE925719edaa758bfd046f8169acb872f1"
+text = transcribe_twilio_audio(recording_url)
+print("Transcribed text:", text)
