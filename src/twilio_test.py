@@ -8,6 +8,7 @@ from utils.logging_config import initialize_logger
 import logging
 from dotenv import load_dotenv
 import os
+import time
 
 app = Flask(__name__)
 
@@ -47,29 +48,38 @@ def voice():
 
 
 # Function to transcribe audio from Twilio
-
+# Function to transcribe audio from Twilio
 def transcribe_twilio_audio(recording_url):
     load_dotenv()
     # Access API key
     twilio_account_sid, twilio_auth_token = os.getenv(
         'TWILIO_ACCOUNT_SID'), os.getenv('TWILIO_AUTH_TOKEN')
-    response = requests.get(recording_url, auth=(
-        twilio_account_sid, twilio_auth_token))
-    if response.status_code == 200:
-        audio_data = response.content
-        recognizer = sr.Recognizer()
-        with sr.AudioFile(BytesIO(audio_data)) as source:
-            audio = recognizer.record(source)
-            # Perform speech recognition
-            try:
-                text = recognizer.recognize_google(audio)
-                return text
-            except sr.UnknownValueError:
-                return "Speech recognition could not understand the audio"
-            except sr.RequestError as e:
-                return "Could not request results from Google Speech Recognition service; {0}".format(e)
-    else:
-        return f"Error retrieving audio file from Twilio: {response.status_code}"
+
+    # Polling variables
+    max_attempts = 10  # Max number of polling attempts
+    delay_seconds = 2  # Delay between polling attempts
+
+    for attempt in range(max_attempts):
+        response = requests.get(recording_url, auth=(twilio_account_sid, twilio_auth_token))
+        if response.status_code == 200:
+            audio_data = response.content
+            recognizer = sr.Recognizer()
+            with sr.AudioFile(BytesIO(audio_data)) as source:
+                audio = recognizer.record(source)
+                try:
+                    text = recognizer.recognize_google(audio)
+                    return text
+                except sr.UnknownValueError:
+                    return "Speech recognition could not understand the audio"
+                except sr.RequestError as e:
+                    return f"Could not request results from Google Speech Recognition service; {e}"
+        elif response.status_code == 404:
+            logging.info(f"Attempt {attempt + 1}: Recording URL not available yet.")
+            time.sleep(delay_seconds)  # Wait before trying again
+        else:
+            return f"Error retrieving audio file from Twilio: {response.status_code}"
+
+    return "Recording URL not available after maximum attempts"
 
 
 # # Usage
