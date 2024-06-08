@@ -60,7 +60,7 @@ def transcribe_twilio_audio(recording_url):
             except sr.RequestError as e:
                 return "Could not request results from Google Speech Recognition service; {0}".format(e)
     else:
-        return "Error retrieving audio file from Twilio"
+        return f"Error retrieving audio file from Twilio: {response.status_code}"
 
 # Usage
 recording_url = "https://api.twilio.com/2010-04-01/Accounts/{AccountSid}/Recordings/{RecordingSid}"
