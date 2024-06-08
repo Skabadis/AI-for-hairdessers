@@ -56,8 +56,8 @@ def transcribe_twilio_audio(recording_url):
         'TWILIO_ACCOUNT_SID'), os.getenv('TWILIO_AUTH_TOKEN')
 
     # Polling variables
-    max_attempts = 10  # Max number of polling attempts
-    delay_seconds = 2  # Delay between polling attempts
+    max_attempts = 30  # Max number of polling attempts
+    delay_seconds = 0.1  # Delay between polling attempts
 
     for attempt in range(max_attempts):
         response = requests.get(recording_url, auth=(twilio_account_sid, twilio_auth_token))
