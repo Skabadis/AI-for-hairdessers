@@ -6,6 +6,7 @@ on:
       - main
       - skandere/pivot-dealerships
       - skandere/improve-logs
+      - ismail/stt
 
 jobs:
   deploy:
@@ -42,6 +43,9 @@ jobs:
           echo TWILIO_ACCOUNT_SID=${{ secrets.TWILIO_ACCOUNT_SID }} >> .env
           echo TWILIO_AUTH_TOKEN=${{ secrets.TWILIO_AUTH_TOKEN }} >> .env
           echo GGL_CAL_CREDS=${{ secrets.GGL_CAL_CREDS }} >> .env
+          echo AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} >> .env
+          echo AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> .env
+          echo AWS_REGION=${{ secrets.AWS_REGION }} >> .env
           sudo systemctl daemon-reload
           sudo systemctl restart gunicorn
 

@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from twilio.twiml.voice_response import VoiceResponse, Gather
 from llms_connectors.openai_connector import get_openai_client
 from utils.read_params import read_params
@@ -7,6 +7,14 @@ from workers.shutdown_worker import shutdown_worker
 # Runs logging_config.py file which sets up the logs - do not remove
 from utils.logging_config import initialize_logger
 import logging
+import boto3
+import os
+from dotenv import load_dotenv
+
+###Still need to change the code to deal with Twilio recordings into the Amazon S3 Bucket
+
+# Charge environment variables
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -15,6 +23,13 @@ parameters = None
 conversation_history = None
 openai_client = None
 
+# Configure the AWS Transcribe client
+transcribe_client = boto3.client(
+    'transcribe',
+    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+    region_name=os.getenv('AWS_REGION')
+)
 
 @app.route("/initialize", methods=['GET', 'POST'])
 def initialize():
