@@ -5,13 +5,6 @@ import os
 import logging
 import time
 
-def url_to_audio_test(recording_url, request):
-    response = request.get(recording_url)
-    try:
-        logging.info(response.status_code)
-    except:
-        x=1
-    return BytesIO(response.content)
 
 def url_wav_to_audio_file(recording_url):
     # Check if the URL ends with ".wav"
