@@ -45,8 +45,8 @@ def initialize():
     Sandra_response = parameters['discussion']['welcome_message']
     conversation_history.append(
         {"role": "assistant", "content": Sandra_response})
-    gather = Gather(input='speech', action='/voice', speechTimeout='auto',
-                    language='fr-FR', actionOnEmptyResult=True)
+    gather = Gather(input='speech', action='/voice',
+                    speechTimeout='auto', language='fr-FR', actionOnEmptyResult=True, speechModel="experimental_conversations")
     gather.say(Sandra_response, voice='Polly.Lea-Neural', language='fr-FR')
     resp.append(gather)
     return str(resp)
@@ -83,7 +83,7 @@ def voice():
             return str(resp)
 
         gather = Gather(input='speech', action='/voice',
-                        speechTimeout='auto', language='fr-FR', actionOnEmptyResult=True)
+                        speechTimeout='auto', language='fr-FR', actionOnEmptyResult=True, speechModel="experimental_conversations")
         # Use alice to save cost, Polly.Lea-Neural for the best one
         gather.say(Sandra_response, voice='Polly.Lea-Neural', language='fr-FR')
         logging.info(f"Sandra's response: {Sandra_response}")
