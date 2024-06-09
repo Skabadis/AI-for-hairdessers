@@ -9,7 +9,7 @@ import os
 import time
 from utils.logging_config import initialize_logger
 from conversation.speech_to_text import audio_file_to_text
-from conversation.audio_processing import url_wav_to_audio_file
+from conversation.audio_processing import url_wav_to_audio_file, url_to_audio_test
 
 app = Flask(__name__)
 
@@ -34,7 +34,8 @@ def voice():
     recording_url = request.values.get('RecordingUrl', None) + ".wav"
     if recording_url:
         logging.info(f'Recording URL: {recording_url}')
-        audio_file = url_wav_to_audio_file(recording_url)
+        # audio_file = url_wav_to_audio_file(recording_url)
+        audio_file = url_to_audio_test(recording_url, request)
         text = audio_file_to_text(audio_file)
         logging.info(f"User input: {text}")
     else:
