@@ -40,7 +40,7 @@ def voice():
     else:
         logging.info("No recording URL")
     resp = VoiceResponse()
-    record = Record(action='/voice', timeout=1, playBeep=False)
+    record = Record(action='/voice', timeout=3, playBeep=False)
     answer = Say("Ceci est un test", voice='alice', language='fr-FR')
     resp.append(answer)
     resp.append(record)
