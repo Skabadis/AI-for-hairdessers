@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - skandere/s3-interactions
+      - skandere/call-recordings
 
 jobs:
   deploy:
