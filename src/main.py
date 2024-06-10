@@ -101,11 +101,11 @@ def voice():
 def call_status():
     call_sid = request.values.get('CallSid')
     call_status = request.values.get('CallStatus')
-    logging.info(f"Call {call_sid} status: {call_status}")
+    # logging.info(f"Call {call_sid} status: {call_status}")
 
-    if call_status in ['completed', 'failed']:
+    # if call_status in ['completed', 'failed']:
         # Upload the log file to S3
-        upload_log_to_s3(log_filename)
+        # upload_log_to_s3(log_filename)
         # Optionally remove the log file from the dictionary to free up memory
         # del log_filename
 
