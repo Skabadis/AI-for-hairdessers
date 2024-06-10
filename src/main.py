@@ -101,7 +101,6 @@ def call_status():
     if call_status in ['completed', 'failed']:
         # Upload the log file to S3
         upload_log_to_s3(log_filename)
-        
         # Shutdown the worker at the end of the call
         shutdown_worker()
 
