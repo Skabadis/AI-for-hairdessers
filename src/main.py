@@ -52,7 +52,7 @@ def initialize():
     resp.append(gather)
     return str(resp)
 
-
+# TODO: check how we are managing the conversation_history. We are adding user_input and Sandra_response here AND in agentic_answer, let's make sure we are not double adding everything
 @app.route("/voice", methods=['GET', 'POST'])
 def voice():
     resp = VoiceResponse()
@@ -79,8 +79,6 @@ def voice():
             # Use alice to save cost, Polly.Lea-Neural for the best one
             resp.say("Au revoir", voice='Polly.Lea-Neural',
                      language='fr-FR')
-            # Shutdown the worker at the end of the call
-            shutdown_worker()
             return str(resp)
 
         gather = Gather(input='speech', action='/voice',
@@ -99,14 +97,12 @@ def voice():
 
 @app.route("/call-status", methods=['POST'])
 def call_status():
-    call_sid = request.values.get('CallSid')
     call_status = request.values.get('CallStatus')
-    # logging.info(f"Call {call_sid} status: {call_status}")
-
     if call_status in ['completed', 'failed']:
         # Upload the log file to S3
         upload_log_to_s3(log_filename)
-        # Optionally remove the log file from the dictionary to free up memory
-        # del log_filename
+        
+        # Shutdown the worker at the end of the call
+        shutdown_worker()
 
     return ('', 204)
