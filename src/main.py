@@ -103,6 +103,4 @@ def call_status():
         shutdown_worker()
         # Upload the log file to S3
         upload_log_to_s3(log_filename)
-
-
     return ('', 204)
