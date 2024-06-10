@@ -6,6 +6,7 @@ from conversation.text_to_text import agentic_answer
 from workers.shutdown_worker import shutdown_worker
 # Runs logging_config.py file which sets up the logs - do not remove
 from utils.logging_config import initialize_logger
+from utils.s3_interactions import upload_log_to_s3
 import logging
 
 app = Flask(__name__)
@@ -14,15 +15,15 @@ app = Flask(__name__)
 parameters = None
 conversation_history = None
 openai_client = None
-
+log_filename = None
 
 @app.route("/initialize", methods=['GET', 'POST'])
 def initialize():
-    global parameters, conversation_history, openai_client
+    global parameters, conversation_history, openai_client, log_filename
 
     call_sid = request.values.get('CallSid')
     if call_sid:
-        initialize_logger(call_sid)
+        log_filename = initialize_logger(call_sid)
 
     # Load parameters
     parameters = read_params()
@@ -95,3 +96,17 @@ def voice():
                  language='fr-FR')  # use alice to save cost, Polly.Lea-Neural for the best one
 
     return str(resp)
+
+@app.route("/call-status", methods=['POST'])
+def call_status():
+    call_sid = request.values.get('CallSid')
+    call_status = request.values.get('CallStatus')
+    logging.info(f"Call {call_sid} status: {call_status}")
+
+    if call_status in ['completed', 'failed']:
+        # Upload the log file to S3
+        upload_log_to_s3(log_filename)
+        # Optionally remove the log file from the dictionary to free up memory
+        # del log_filename
+
+    return ('', 204)
