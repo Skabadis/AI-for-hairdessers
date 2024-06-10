@@ -98,7 +98,7 @@ def voice():
 @app.route("/call-status", methods=['POST'])
 def call_status():
     call_status = request.values.get('CallStatus')
-    if call_status in ['completed', 'failed']:
+    if call_status in ['completed', 'canceled', 'unanswered']:
         # Upload the log file to S3
         upload_log_to_s3(log_filename)
         # Shutdown the worker at the end of the call
