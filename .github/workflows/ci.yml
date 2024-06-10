@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - main
-      - skandere/pivot-dealerships
-      - skandere/improve-STT
+      - skandere/s3-interactions
 
 jobs:
   deploy:

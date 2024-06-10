@@ -6,6 +6,7 @@ from conversation.text_to_text import agentic_answer
 from workers.shutdown_worker import shutdown_worker
 # Runs logging_config.py file which sets up the logs - do not remove
 from utils.logging_config import initialize_logger
+from utils.s3_interactions import upload_log_to_s3
 import logging
 
 app = Flask(__name__)
@@ -14,15 +15,15 @@ app = Flask(__name__)
 parameters = None
 conversation_history = None
 openai_client = None
-
+log_filename = None
 
 @app.route("/initialize", methods=['GET', 'POST'])
 def initialize():
-    global parameters, conversation_history, openai_client
+    global parameters, conversation_history, openai_client, log_filename
 
     call_sid = request.values.get('CallSid')
     if call_sid:
-        initialize_logger(call_sid)
+        log_filename = initialize_logger(call_sid)
 
     # Load parameters
     parameters = read_params()
@@ -51,7 +52,7 @@ def initialize():
     resp.append(gather)
     return str(resp)
 
-
+# TODO: check how we are managing the conversation_history. We are adding user_input and Sandra_response here AND in agentic_answer, let's make sure we are not double adding everything
 @app.route("/voice", methods=['GET', 'POST'])
 def voice():
     resp = VoiceResponse()
@@ -78,8 +79,6 @@ def voice():
             # Use alice to save cost, Polly.Lea-Neural for the best one
             resp.say("Au revoir", voice='Polly.Lea-Neural',
                      language='fr-FR')
-            # Shutdown the worker at the end of the call
-            shutdown_worker()
             return str(resp)
 
         gather = Gather(input='speech', action='/voice',
@@ -95,3 +94,13 @@ def voice():
                  language='fr-FR')  # use alice to save cost, Polly.Lea-Neural for the best one
 
     return str(resp)
+
+@app.route("/call-status", methods=['POST'])
+def call_status():
+    call_status = request.values.get('CallStatus')
+    if call_status in ['completed', 'canceled', 'no-answer']:
+        # Shutdown the worker at the end of the call
+        shutdown_worker()
+        # Upload the log file to S3
+        upload_log_to_s3(log_filename)
+    return ('', 204)
