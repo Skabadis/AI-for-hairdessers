@@ -33,7 +33,11 @@ jobs:
           if [ ! -d "venv" ]; then
             python3 -m venv venv
           fi
-          source venv/bin/activate  # Activate virtual environment
+          source venv/bin/activate  # Activate virtual environment 
+          git reset --hard HEAD
+          git clean -fd
+          git fetch origin # Fetch all branches
+          git checkout ${{ github.ref_name }} # Checkout the triggering branch
           git pull origin ${{ github.ref_name }}  # Pull changes from the triggering branch
           python -m pip install --upgrade pip
           pip install -r requirements.txt
