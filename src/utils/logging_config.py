@@ -15,7 +15,7 @@ def initialize_logger(call_sid):
 
     # Create a unique log file name based on the current date and time
     ny_tz = pytz.timezone('America/New_York')
-    current_time = datetime.now(ny_tz).strftime("%Y-%m-%d__%H-%M-%S")
+    current_time = datetime.now(ny_tz).strftime("%Y-%m-%d_%H-%M-%S")
     log_filename = f"call_{current_time}_{call_sid}.log"
 
     # Set up the log handler
