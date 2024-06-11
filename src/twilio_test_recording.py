@@ -91,7 +91,7 @@ def initiate_call_recording(call_sid):
         auth=(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
     )
 
-    if response.status_code == 200:
+    if response.status_code == 201:
         logging.info("Call recording initiated successfully.")
     else:
         logging.error(
