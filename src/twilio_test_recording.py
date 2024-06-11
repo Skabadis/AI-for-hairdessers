@@ -50,6 +50,7 @@ def voice():
 def call_status():
     call_status = request.values.get('CallStatus')
     if call_status in ['completed', 'canceled', 'no-answer']:
+        logging.info(f"Call status: {call_status}")
         # Shutdown the worker at the end of the call
         shutdown_worker()
         # Upload the log file to S3
