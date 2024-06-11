@@ -58,10 +58,6 @@ def voice():
 def call_status():
     call_status = request.values.get('CallStatus')
     if call_status in ['completed', 'canceled', 'no-answer']:
-        try:
-            logging.info(f"RecordingURL available when call is completed: {request.form['RecordingUrl']}")
-        except:
-            logging.info(f"RecordingURL NOT available when call is completed: {request.form}")
         logging.info(f"Call status: {call_status}")
 
         # Upload recording to S3
@@ -71,12 +67,14 @@ def call_status():
         upload_content_to_s3(recording_content, recording_filename,
                              content_folder, bucket_name)
 
+        # Shutdown the worker at the end of the call
+        shutdown_worker()
+        
         # Upload the log file to S3
         log_folder, bucket_name = parameters["paths"]["logs_info"], parameters["paths"]["s3_bucket_name"]
         upload_log_to_s3(log_filename, log_folder, bucket_name)
         
-        # Shutdown the worker at the end of the call
-        shutdown_worker()
+
     return ('', 204)
 
 
