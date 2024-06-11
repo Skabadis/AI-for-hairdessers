@@ -38,7 +38,7 @@ def voice():
         speech_result = request.form['SpeechResult']
         logging.info(f"User said: {speech_result}")
 
-    gather = Gather(input='speech', action='/process_gather',
+    gather = Gather(input='speech', action='/voice',
                     speechTimeout='auto', language='fr-FR', actionOnEmptyResult=True, speechModel="experimental_conversations")
     gather.say("Ceci est un test", voice='alice', language='fr-FR')
     # Append gather to the response
