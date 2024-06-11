@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - skandere/call-recordings
 
 jobs:
   deploy:
