@@ -56,6 +56,21 @@ def call_status():
         upload_log_to_s3(log_filename)
     return ('', 204)
 
+@app.route("/recording-events", methods=['POST'])
+def recording_events():
+    # Retrieve recording URL and other details from Twilio's POST request
+    recording_url = request.form['RecordingUrl']
+    recording_sid = request.form['RecordingSid']
+    call_sid = request.form['CallSid']
+
+    # Log the recording information
+    logging.info(f"Recording URL: {recording_url}, Recording SID: {recording_sid}, Call SID: {call_sid}")
+
+    # You can save this information to a database or take other actions
+    # For example, you can save the recording URL to a database for future reference
+
+    # Return an empty response as required by Twilio
+    return "", 200
 
 def initiate_call_recording(call_sid):
     load_dotenv()
