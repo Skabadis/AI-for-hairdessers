@@ -7,7 +7,7 @@ def upload_log_to_s3(log_filename, log_folder, bucket_name):
     log_filepath = os.path.join(log_folder, log_filename)
     # Write to s3 and remove file locally
     try:
-        with open(log_filename, 'rb') as log_file:
+        with open(log_filepath, 'rb') as log_file:
             s3_client.put_object(Bucket=bucket_name, Key=log_filepath, Body=log_file)
         logging.info(f"Uploaded {log_filepath} to S3")
         os.remove(log_filepath)

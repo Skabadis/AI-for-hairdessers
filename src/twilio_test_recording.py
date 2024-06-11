@@ -69,7 +69,7 @@ def call_status():
 @app.route("/recording-events", methods=['POST'])
 def recording_events():
     # Retrieve recording URL and other details from Twilio's POST request
-    recording_url = request.form['RecordingUrl']
+    recording_url = request.form['RecordingUrl'] + ".wav"
     recording_sid = request.form['RecordingSid']
     call_sid = request.form['CallSid']
 
