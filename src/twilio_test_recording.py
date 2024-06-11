@@ -4,11 +4,9 @@ import logging
 from utils.logging_config import initialize_logger
 from utils.s3_interactions import upload_log_to_s3, upload_content_to_s3
 from workers.shutdown_worker import shutdown_worker
-from dotenv import load_dotenv
-import os
-import requests
 from conversation.audio_processing import url_wav_to_audio_file
 from utils.read_params import read_params
+from conversation.recording import initiate_call_recording
 
 app = Flask(__name__)
 
@@ -19,13 +17,13 @@ recording_url = None
 
 @app.route("/initialize", methods=['GET', 'POST'])
 def initialize():
-    global log_filename, parameters
+    global log_filename, parameters, recording_url
 
     parameters = read_params()
     call_sid = request.values.get('CallSid')
     if call_sid:
         log_filename = initialize_logger(call_sid)
-        initiate_call_recording(call_sid)
+        recording_url = initiate_call_recording(call_sid)
 
     resp = VoiceResponse()
     gather = Gather(input='speech', action='/voice',
@@ -76,35 +74,10 @@ def call_status():
     return ('', 204)
 
 
-@app.route("/recording-events", methods=['POST'])
-def recording_events():
-    global recording_url
-    # Retrieve recording URL and other details from Twilio's POST request
-    recording_url = request.form['RecordingUrl'] + ".wav"
-    logging.info(f"Recording URL: {recording_url}")
-    return "", 200
-
-
-def initiate_call_recording(call_sid):
-    load_dotenv()
-    TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN = os.getenv(
-        "TWILIO_ACCOUNT_SID"), os.getenv("TWILIO_AUTH_TOKEN")
-    recording_url = f"https://api.twilio.com/2010-04-01/Accounts/{TWILIO_ACCOUNT_SID}/Calls/{call_sid}/Recordings.json"
-    recording_callback_url = "http://13.50.101.111:8000/recording-events"
-
-    payload = {
-        "RecordingStatusCallback": recording_callback_url,
-        "RecordingStatusCallbackEvent": "in-progress completed absent"
-    }
-
-    response = requests.post(
-        recording_url,
-        data=payload,
-        auth=(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-    )
-
-    if response.status_code == 201:
-        logging.info("Call recording initiated successfully.")
-    else:
-        logging.error(
-            f"Failed to initiate call recording. Status code: {response.status_code}, Error: {response.text}")
+# @app.route("/recording-events", methods=['POST'])
+# def recording_events():
+#     global recording_url
+#     # Retrieve recording URL and other details from Twilio's POST request
+#     recording_url = request.form['RecordingUrl'] + ".wav"
+#     logging.info(f"Recording URL: {recording_url}")
+#     return "", 200
