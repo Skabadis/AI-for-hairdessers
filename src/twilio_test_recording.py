@@ -20,12 +20,8 @@ def initialize():
     resp = VoiceResponse()
     # Record the call
     resp.record(max_length=3600, recording_status_callback='/recording-status')  # Adjust max_length as needed
-    gather = Gather(input='speech', action='/process_gather',
-                    speechTimeout='auto', language='fr-FR', actionOnEmptyResult=True, speechModel="experimental_conversations")
-    gather.say("Ceci est un test", voice='alice', language='fr-FR')
-
-    # Append gather to the response
-    resp.append(gather)
+    # Redirect to /gather after starting the recording
+    resp.redirect('/process_gather')
     
     return str(resp)
 
