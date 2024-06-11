@@ -17,13 +17,13 @@ recording_url = None
 
 @app.route("/initialize", methods=['GET', 'POST'])
 def initialize():
-    global log_filename, parameters, recording_url
+    global log_filename, parameters
 
     parameters = read_params()
     call_sid = request.values.get('CallSid')
     if call_sid:
         log_filename = initialize_logger(call_sid)
-        recording_url = initiate_call_recording(call_sid)
+        initiate_call_recording(call_sid)
 
     resp = VoiceResponse()
     gather = Gather(input='speech', action='/voice',
@@ -74,10 +74,10 @@ def call_status():
     return ('', 204)
 
 
-# @app.route("/recording-events", methods=['POST'])
-# def recording_events():
-#     global recording_url
-#     # Retrieve recording URL and other details from Twilio's POST request
-#     recording_url = request.form['RecordingUrl'] + ".wav"
-#     logging.info(f"Recording URL: {recording_url}")
-#     return "", 200
+@app.route("/recording-events", methods=['POST'])
+def recording_events():
+    global recording_url
+    # Retrieve recording URL and other details from Twilio's POST request
+    recording_url = request.form['RecordingUrl'] + ".wav"
+    logging.info(f"Recording URL: {recording_url}")
+    return "", 200

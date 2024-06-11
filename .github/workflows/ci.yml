@@ -45,6 +45,7 @@ jobs:
           echo TWILIO_ACCOUNT_SID=${{ secrets.TWILIO_ACCOUNT_SID }} >> .env
           echo TWILIO_AUTH_TOKEN=${{ secrets.TWILIO_AUTH_TOKEN }} >> .env
           echo GGL_CAL_CREDS=${{ secrets.GGL_CAL_CREDS }} >> .env
+          echo EC2_HOST=${{ secrets.EC2_HOST }} >> .env
           sudo systemctl daemon-reload
           sudo systemctl restart gunicorn
 
