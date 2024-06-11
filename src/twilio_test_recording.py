@@ -69,12 +69,10 @@ def call_status():
 
         # Shutdown the worker at the end of the call
         shutdown_worker()
-        
+
         # Upload the log file to S3
         log_folder, bucket_name = parameters["paths"]["logs_info"], parameters["paths"]["s3_bucket_name"]
         upload_log_to_s3(log_filename, log_folder, bucket_name)
-        
-
     return ('', 204)
 
 
