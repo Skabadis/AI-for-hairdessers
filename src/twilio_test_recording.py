@@ -59,16 +59,18 @@ def call_status():
     call_status = request.values.get('CallStatus')
     if call_status in ['completed', 'canceled', 'no-answer']:
         logging.info(f"Call status: {call_status}")
-        # Upload the log file to S3
-        log_folder, bucket_name = parameters["paths"]["logs_info"], parameters["paths"]["s3_bucket_name"]
-        upload_log_to_s3(log_filename, log_folder, bucket_name)
 
         # Upload recording to S3
         _, recording_content = url_wav_to_audio_file(recording_url)
         content_folder, bucket_name = parameters["paths"]["logs_recording"], parameters["paths"]["s3_bucket_name"]
-        upload_content_to_s3(recording_content, log_filename,
+        recording_filename = log_filename.replace(".log", ".wav")
+        upload_content_to_s3(recording_content, recording_filename,
                              content_folder, bucket_name)
 
+        # Upload the log file to S3
+        log_folder, bucket_name = parameters["paths"]["logs_info"], parameters["paths"]["s3_bucket_name"]
+        upload_log_to_s3(log_filename, log_folder, bucket_name)
+        
         # Shutdown the worker at the end of the call
         shutdown_worker()
     return ('', 204)
