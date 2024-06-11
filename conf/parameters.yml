@@ -62,3 +62,7 @@ discussion:
   no_user_input_message: |
     Je n'ai pas entendu votre réponse. Pouvez-vous répéter?
     
+paths:
+  s3_bucket_name: "aiforcardealers"
+  logs_info: "logs/info/"
+  logs_recording: "logs/recordings/"
