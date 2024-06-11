@@ -71,4 +71,4 @@ def url_wav_to_audio_file(recording_url):
         raise RuntimeError(
             f"Failed to create BytesIO object from response content: {e}")
 
-    return audio_file
+    return audio_file, response.content

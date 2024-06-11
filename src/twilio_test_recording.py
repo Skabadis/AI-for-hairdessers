@@ -2,25 +2,30 @@ from flask import Flask, request
 from twilio.twiml.voice_response import VoiceResponse, Gather
 import logging
 from utils.logging_config import initialize_logger
-from utils.s3_interactions import upload_log_to_s3
+from utils.s3_interactions import upload_log_to_s3, upload_content_to_s3
 from workers.shutdown_worker import shutdown_worker
 from dotenv import load_dotenv
 import os
 import requests
+from conversation.audio_processing import url_wav_to_audio_file
+from utils.read_params import read_params
 
 app = Flask(__name__)
 
 log_filename = None
+parameters = None
 
 
 @app.route("/initialize", methods=['GET', 'POST'])
 def initialize():
-    global log_filename
+    global log_filename, parameters
+
+    parameters = read_params()
     call_sid = request.values.get('CallSid')
     if call_sid:
         log_filename = initialize_logger(call_sid)
         initiate_call_recording(call_sid)
-        
+
     resp = VoiceResponse()
     gather = Gather(input='speech', action='/voice',
                     speechTimeout='auto', language='fr-FR', actionOnEmptyResult=True, speechModel="experimental_conversations")
@@ -29,6 +34,7 @@ def initialize():
     resp.append(gather)
 
     return str(resp)
+
 
 @app.route("/voice", methods=["POST", "GET"])
 def voice():
@@ -46,6 +52,7 @@ def voice():
 
     return str(resp)
 
+
 @app.route("/call-status", methods=['POST'])
 def call_status():
     call_status = request.values.get('CallStatus')
@@ -54,8 +61,10 @@ def call_status():
         # Shutdown the worker at the end of the call
         shutdown_worker()
         # Upload the log file to S3
-        upload_log_to_s3(log_filename)
+        log_folder, bucket_name = parameters["paths"]["logs_info"], parameters["paths"]["s3_bucket_name"]
+        upload_log_to_s3(log_filename, log_folder, bucket_name)
     return ('', 204)
+
 
 @app.route("/recording-events", methods=['POST'])
 def recording_events():
@@ -65,13 +74,18 @@ def recording_events():
     call_sid = request.form['CallSid']
 
     # Log the recording information
-    logging.info(f"Recording URL: {recording_url}, Recording SID: {recording_sid}, Call SID: {call_sid}")
+    logging.info(
+        f"Recording URL: {recording_url}, Recording SID: {recording_sid}, Call SID: {call_sid}")
 
     # You can save this information to a database or take other actions
     # For example, you can save the recording URL to a database for future reference
-
+    _, recording_content = url_wav_to_audio_file(recording_url)
+    content_folder, bucket_name = parameters["paths"]["logs_recording"], parameters["paths"]["s3_bucket_name"]
+    upload_content_to_s3(recording_content, log_filename,
+                         content_folder, bucket_name)
     # Return an empty response as required by Twilio
     return "", 200
+
 
 def initiate_call_recording(call_sid):
     load_dotenv()

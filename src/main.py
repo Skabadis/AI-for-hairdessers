@@ -17,6 +17,7 @@ conversation_history = None
 openai_client = None
 log_filename = None
 
+
 @app.route("/initialize", methods=['GET', 'POST'])
 def initialize():
     global parameters, conversation_history, openai_client, log_filename
@@ -53,6 +54,8 @@ def initialize():
     return str(resp)
 
 # TODO: check how we are managing the conversation_history. We are adding user_input and Sandra_response here AND in agentic_answer, let's make sure we are not double adding everything
+
+
 @app.route("/voice", methods=['GET', 'POST'])
 def voice():
     resp = VoiceResponse()
@@ -95,6 +98,7 @@ def voice():
 
     return str(resp)
 
+
 @app.route("/call-status", methods=['POST'])
 def call_status():
     call_status = request.values.get('CallStatus')
@@ -102,5 +106,6 @@ def call_status():
         # Shutdown the worker at the end of the call
         shutdown_worker()
         # Upload the log file to S3
-        upload_log_to_s3(log_filename)
+        log_folder, bucket_name = parameters["paths"]["logs_info"], parameters["paths"]["s3_bucket_name"]
+        upload_log_to_s3(log_filename, log_folder, bucket_name)
     return ('', 204)
