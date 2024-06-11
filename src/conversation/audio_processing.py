@@ -55,7 +55,7 @@ def url_wav_to_audio_file(recording_url):
     if response.status_code != 200:
         logging.error("Max attempts reached. Recording URL not available.")
         raise ConnectionError(
-            "Max attempts reached. Recording URL not available.")
+            f"Max attempts reached. Recording URL not available. Error: {response.status_code}")
 
     # Check if the response content is not empty
     if not response.content:

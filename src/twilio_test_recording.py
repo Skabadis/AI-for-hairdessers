@@ -14,11 +14,12 @@ app = Flask(__name__)
 
 log_filename = None
 parameters = None
+recording_url = None
 
 
 @app.route("/initialize", methods=['GET', 'POST'])
 def initialize():
-    global log_filename, parameters
+    global log_filename, parameters, recording_url
 
     parameters = read_params()
     call_sid = request.values.get('CallSid')
@@ -58,11 +59,18 @@ def call_status():
     call_status = request.values.get('CallStatus')
     if call_status in ['completed', 'canceled', 'no-answer']:
         logging.info(f"Call status: {call_status}")
-        # Shutdown the worker at the end of the call
-        shutdown_worker()
         # Upload the log file to S3
         log_folder, bucket_name = parameters["paths"]["logs_info"], parameters["paths"]["s3_bucket_name"]
         upload_log_to_s3(log_filename, log_folder, bucket_name)
+
+        # Upload recording to S3
+        _, recording_content = url_wav_to_audio_file(recording_url)
+        content_folder, bucket_name = parameters["paths"]["logs_recording"], parameters["paths"]["s3_bucket_name"]
+        upload_content_to_s3(recording_content, log_filename,
+                             content_folder, bucket_name)
+
+        # Shutdown the worker at the end of the call
+        shutdown_worker()
     return ('', 204)
 
 
@@ -70,20 +78,7 @@ def call_status():
 def recording_events():
     # Retrieve recording URL and other details from Twilio's POST request
     recording_url = request.form['RecordingUrl'] + ".wav"
-    recording_sid = request.form['RecordingSid']
-    call_sid = request.form['CallSid']
-
-    # Log the recording information
-    logging.info(
-        f"Recording URL: {recording_url}, Recording SID: {recording_sid}, Call SID: {call_sid}")
-
-    # You can save this information to a database or take other actions
-    # For example, you can save the recording URL to a database for future reference
-    _, recording_content = url_wav_to_audio_file(recording_url)
-    content_folder, bucket_name = parameters["paths"]["logs_recording"], parameters["paths"]["s3_bucket_name"]
-    upload_content_to_s3(recording_content, log_filename,
-                         content_folder, bucket_name)
-    # Return an empty response as required by Twilio
+    logging.info(f"Recording URL: {recording_url}")
     return "", 200
 
 
