@@ -58,6 +58,10 @@ def voice():
 def call_status():
     call_status = request.values.get('CallStatus')
     if call_status in ['completed', 'canceled', 'no-answer']:
+        try:
+            logging.info(f"RecordingURL available when call is completed: {request.form['RecordingUrl']}")
+        except:
+            logging.info(f"RecordingURL NOT available when call is completed: {request.form}")
         logging.info(f"Call status: {call_status}")
 
         # Upload recording to S3
