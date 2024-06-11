@@ -1,12 +1,13 @@
 from flask import Flask, request
 from twilio.twiml.voice_response import VoiceResponse, Gather
 from llms_connectors.openai_connector import get_openai_client
-from utils.read_params import read_params
-from conversation.text_to_text import agentic_answer
 from workers.shutdown_worker import shutdown_worker
-# Runs logging_config.py file which sets up the logs - do not remove
+from utils.read_params import read_params
 from utils.logging_config import initialize_logger
-from utils.s3_interactions import upload_log_to_s3
+from utils.s3_interactions import upload_log_to_s3, upload_content_to_s3
+from conversation.text_to_text import agentic_answer
+from conversation.recording import initiate_call_recording
+from conversation.audio_processing import url_wav_to_audio_file
 import logging
 
 app = Flask(__name__)
@@ -16,6 +17,7 @@ parameters = None
 conversation_history = None
 openai_client = None
 log_filename = None
+recording_url = None
 
 
 @app.route("/initialize", methods=['GET', 'POST'])
@@ -25,7 +27,8 @@ def initialize():
     call_sid = request.values.get('CallSid')
     if call_sid:
         log_filename = initialize_logger(call_sid)
-
+        initiate_call_recording(call_sid)
+        
     # Load parameters
     parameters = read_params()
     logging.info(f"Parameters retrieved properly")
@@ -54,8 +57,6 @@ def initialize():
     return str(resp)
 
 # TODO: check how we are managing the conversation_history. We are adding user_input and Sandra_response here AND in agentic_answer, let's make sure we are not double adding everything
-
-
 @app.route("/voice", methods=['GET', 'POST'])
 def voice():
     resp = VoiceResponse()
@@ -103,9 +104,27 @@ def voice():
 def call_status():
     call_status = request.values.get('CallStatus')
     if call_status in ['completed', 'canceled', 'no-answer']:
+        logging.info(f"Call status: {call_status}")
+
+        # Upload recording to S3
+        _, recording_content = url_wav_to_audio_file(recording_url)
+        content_folder, bucket_name = parameters["paths"]["logs_recording"], parameters["paths"]["s3_bucket_name"]
+        recording_filename = log_filename.replace(".log", ".wav")
+        upload_content_to_s3(recording_content, recording_filename,
+                             content_folder, bucket_name)
+
         # Shutdown the worker at the end of the call
         shutdown_worker()
+
         # Upload the log file to S3
         log_folder, bucket_name = parameters["paths"]["logs_info"], parameters["paths"]["s3_bucket_name"]
         upload_log_to_s3(log_filename, log_folder, bucket_name)
     return ('', 204)
+
+@app.route("/recording-events", methods=['POST'])
+def recording_events():
+    global recording_url
+    # Retrieve recording URL and other details from Twilio's POST request
+    recording_url = request.form['RecordingUrl'] + ".wav"
+    logging.info(f"Recording URL: {recording_url}")
+    return "", 200
