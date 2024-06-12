@@ -37,4 +37,4 @@ def initialize_logger(call_sid):
         logger.removeHandler(logger.handlers[0])
 
     logger.addHandler(handler)
-    return log_filename
+    return log_filename, current_time

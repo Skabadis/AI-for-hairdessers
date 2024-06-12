@@ -18,15 +18,15 @@ conversation_history = None
 openai_client = None
 log_filename = None
 recording_url = None
-
+current_time = None
 
 @app.route("/initialize", methods=['GET', 'POST'])
 def initialize():
-    global parameters, conversation_history, openai_client, log_filename
+    global parameters, conversation_history, openai_client, log_filename, current_time
 
     call_sid = request.values.get('CallSid')
     if call_sid:
-        log_filename = initialize_logger(call_sid)
+        log_filename, current_time = initialize_logger(call_sid)
         initiate_call_recording(call_sid)
         
     # Load parameters
@@ -59,6 +59,7 @@ def initialize():
 # TODO: check how we are managing the conversation_history. We are adding user_input and Sandra_response here AND in agentic_answer, let's make sure we are not double adding everything
 @app.route("/voice", methods=['GET', 'POST'])
 def voice():
+    call_sid = request.values.get('CallSid')
     resp = VoiceResponse()
     try:
         user_input = request.form.get('SpeechResult')
@@ -71,7 +72,7 @@ def voice():
             conversation_history.append(
                 {"role": "user", "content": user_input})
             Sandra_response = agentic_answer(
-                conversation_history, user_input, openai_client)
+                conversation_history, user_input, openai_client, current_time, call_sid)
 
         # Add Sandra_reponse to conversation history
         conversation_history.append(

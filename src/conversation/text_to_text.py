@@ -46,22 +46,24 @@ def save_event_workflow(json_input_str, conversation_history, params):
     Sandra_response = params["discussion"]["event_saved_message"]
     return Sandra_response
 
-def save_request_workflow(json_input_str, conversation_history, params):
+def save_request_workflow(json_input_str, conversation_history, params, datetime, call_sid):
     request_json = json.loads(json_input_str)
     logging.info(f"Success, dictionary well converted: {request_json}")    
     df = pd.DataFrame([request_json])
+    df["datetime"] = datetime
+    df["call_sid"] = call_sid
     if not os.path.exists("data/"):
         os.makedirs("data/")
     df.to_csv("data/request.csv", index=False)
     logging.info("Saved request in csv")
-    # Confirm appointment was booked to customer
+    # Confirm request was recorded to customer
     conversation_history.append({"role": "assistant",
                                  "content": params["discussion"]["request_saved_message"]})
     Sandra_response = params["discussion"]["request_saved_message"]
     return Sandra_response
     
     
-def agentic_answer(conversation_history, user_input, openai_client):
+def agentic_answer(conversation_history, user_input, openai_client, datetime, call_sid):
     """
     Text to text module perfomring the interaction between the user input and the model output.
 
@@ -110,7 +112,7 @@ def agentic_answer(conversation_history, user_input, openai_client):
         logging.info(f"This is supposed to be a JSON:\n {json_input_str}")
         try:
             Sandra_response = save_request_workflow(
-                json_input_str, conversation_history, params)
+                json_input_str, conversation_history, params, datetime, call_sid)
             return Sandra_response
         except Exception as e:
             logging.info(
