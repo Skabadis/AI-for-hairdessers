@@ -45,6 +45,9 @@ jobs:
           echo TWILIO_AUTH_TOKEN=${{ secrets.TWILIO_AUTH_TOKEN }} >> .env
           echo GGL_CAL_CREDS=${{ secrets.GGL_CAL_CREDS }} >> .env
           echo EC2_HOST=${{ secrets.EC2_HOST }} >> .env
+          echo RDS_HOST=${{ secrets.RDS_HOST }} >> .env
+          echo RDS_USER=${{ secrets.RDS_USER }} >> .env
+          echo RDS_PASSWORD=${{ secrets.RDS_PASSWORD }} >> .env
           sudo systemctl daemon-reload
           sudo systemctl restart gunicorn
 
