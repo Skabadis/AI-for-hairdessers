@@ -105,7 +105,8 @@ def agentic_answer(conversation_history, user_input, openai_client, datetime, ca
 
     # Save event workflow
     if 'sauvegarde' in Sandra_response.lower():
-        logging.info("Sauvegarde")
+        logging.info(f"Sauvegarde. This was Sandra response: {Sandra_response}")
+        
         conversation_history.append({"role": "system",
                                      "content": params["prompts"]["write_request_prompt"]})
         json_input_str = chat(conversation_history, openai_client)
