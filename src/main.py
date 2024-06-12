@@ -81,9 +81,9 @@ def voice():
         logging.info(f"Conversation history: {conversation_history[1:]}")
         # Case when end of conversation
         # TODO: improve to have the worker start and shutdown based call start and end
-        if Sandra_response.lower() == "end conversation":
+        if 'au revoir' in Sandra_response.lower():
             # Use alice to save cost, Polly.Lea-Neural for the best one
-            resp.say("Au revoir", voice='Polly.Lea-Neural',
+            resp.say(Sandra_response, voice='Polly.Lea-Neural',
                      language='fr-FR')
             return str(resp)
 

@@ -120,8 +120,8 @@ def agentic_answer(conversation_history, user_input, openai_client, datetime, ca
             return params["discussion"]["error_message"]
 
     # End conversation workflow
-    if 'au revoir' in Sandra_response.lower():
-        logging.info(f"Sandra's response: {Sandra_response}")
-        logging.info("Au revoir")
-        return "End conversation"
+    # if 'au revoir' in Sandra_response.lower():
+    #     logging.info(f"Sandra's response: {Sandra_response}")
+    #     logging.info("Au revoir")
+    #     return "End conversation"
     return Sandra_response
