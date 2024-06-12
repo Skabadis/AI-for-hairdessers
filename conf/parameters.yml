@@ -23,6 +23,19 @@ prompts:
       Repond par des phrases courtes en allant à l'essentiel.
 
   write_event_prompt: |
+    Il faut que tu renvoies un JSON contenant les informations suivants: Date et heure du rendez-vous, service demandé par le client, marque et modèle de la voiture du client, ainsi que le prénom, nom et numero de téléphone du client.
+                                
+    Voila a quoi ressembe le json:
+
+    '{"summary": "Prénom Nom - Numero de telephone", "description": "Service demandé par le client, marque et modèle de la voiture", "start": {"dateTime": "2024-05-30T11:00:00+02:00", "timeZone": "Europe/Paris"}}'
+
+    Par exemple, pour un client qui a une Suzuki Swift et qui veut faire une vidange le jeudi 30 mai à 14 heures, qui a pour prénom Jean et nom Moulin et numéro de téléphone 0701165188, le json que tu dois retourner est:
+
+    '{"summary": "Jean Moulin - 0701165188", "description": "Vidange, Suzuki Swift", "start": {"dateTime": "2024-05-30T14:00:00+02:00","timeZone": "Europe/Paris"}}'
+
+    Fait très attention a ne retourner que le json et rien d'autre. 
+
+  write_request_prompt: |
     Il faut que tu renvoies un JSON contenant les informations suivants: service demandé par le client, marque et modèle de la voiture du client, plaque d'immatriculation, ainsi que le prénom, nom et numero de téléphone du client.
                                 
     Voila a quoi ressembe le json:
@@ -58,7 +71,7 @@ discussion:
 
   request_saved_message: |
     Votre requête a bien été enregistrée. Vous allez être recontacté par nos équipes techniques sous peu pour vous assister et prendre rendez-vous si besoin!
-    
+
   error_message: |
     Une erreur inconnue est survenue, veuillez essayer de rappeler.
   

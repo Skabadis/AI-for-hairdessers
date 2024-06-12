@@ -54,6 +54,11 @@ def save_request_workflow(json_input_str, conversation_history, params):
         os.makedirs("data/")
     df.to_csv("data/request.csv", index=False)
     logging.info("Saved request in csv")
+    # Confirm appointment was booked to customer
+    conversation_history.append({"role": "assistant",
+                                 "content": params["discussion"]["request_saved_message"]})
+    Sandra_response = params["discussion"]["request_saved_message"]
+    return Sandra_response
     
     
 def agentic_answer(conversation_history, user_input, openai_client):
@@ -100,11 +105,11 @@ def agentic_answer(conversation_history, user_input, openai_client):
     if 'sauvegarde' in Sandra_response.lower():
         logging.info("Sauvegarde")
         conversation_history.append({"role": "system",
-                                     "content": params["prompts"]["write_event_prompt"]})
+                                     "content": params["prompts"]["write_request_prompt"]})
         json_input_str = chat(conversation_history, openai_client)
         logging.info(f"This is supposed to be a JSON:\n {json_input_str}")
         try:
-            Sandra_response = save_event_workflow(
+            Sandra_response = save_request_workflow(
                 json_input_str, conversation_history, params)
             return Sandra_response
         except Exception as e:
