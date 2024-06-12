@@ -69,14 +69,14 @@ def voice():
         if not user_input:  # If no user input detected say no user input message
             Sandra_response = parameters['discussion']['no_user_input_message']
         else:  # If user input detected, regular conversation
-            conversation_history.append(
-                {"role": "user", "content": user_input})
+            # conversation_history.append(
+            #     {"role": "user", "content": user_input})
             Sandra_response = agentic_answer(
                 conversation_history, user_input, openai_client, current_time, call_sid)
 
         # Add Sandra_reponse to conversation history
-        conversation_history.append(
-            {"role": "assistant", "content": Sandra_response})
+        # conversation_history.append(
+        #     {"role": "assistant", "content": Sandra_response})
 
         logging.info(f"Conversation history: {conversation_history[1:]}")
         # Case when end of conversation
