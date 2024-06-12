@@ -78,6 +78,7 @@ def voice():
         conversation_history.append(
             {"role": "assistant", "content": Sandra_response})
 
+        logging.info(f"Conversation history: {conversation_history[1:]}")
         # Case when end of conversation
         # TODO: improve to have the worker start and shutdown based call start and end
         if Sandra_response.lower() == "end conversation":
