@@ -49,7 +49,7 @@ def save_event_workflow(json_input_str, conversation_history, params):
 def save_request_workflow(json_input_str, conversation_history, params):
     request_json = json.loads(json_input_str)
     logging.info(f"Success, dictionary well converted: {request_json}")    
-    df = pd.DataFrame(request_json)
+    df = pd.DataFrame([request_json])
     if not os.path.exists("data/"):
         os.makedirs("data/")
     df.to_csv("data/request.csv", index=False)
