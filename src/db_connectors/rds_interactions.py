@@ -47,10 +47,16 @@ except Exception as e:
 
 # # Create a table
 # create_table_query = '''
-# CREATE TABLE IF NOT EXISTS test_table (
-#     id SERIAL PRIMARY KEY,
-#     name VARCHAR(100),
-#     age INT
+# CREATE TABLE IF NOT EXISTS requests_table (
+#     call_id SERIAL PRIMARY KEY,
+#     datetime VARCHAR(100),
+#     prenom VARCHAR(100),
+#     nom VARCHAR(100),
+#     telephone VARCHAR(100),
+#     description TEXT,
+#     immatriculation VARCHAR(100),
+#     marque VARCHAR(100),
+#     modele VARCHAR(100)
 # )
 # '''
 # try:
