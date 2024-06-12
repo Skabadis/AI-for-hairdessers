@@ -83,3 +83,7 @@ paths:
   s3_bucket_name: "aiforcardealers"
   logs_info: "logs/info/"
   logs_recording: "logs/recordings/"
+
+rds:
+  RDS_PORT: '5432'
+  RDS_NAME: 'db-free-tier-ai-for-car-dealers'

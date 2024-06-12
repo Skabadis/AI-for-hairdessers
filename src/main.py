@@ -4,7 +4,7 @@ from llms_connectors.openai_connector import get_openai_client
 from workers.shutdown_worker import shutdown_worker
 from utils.read_params import read_params
 from utils.logging_config import initialize_logger
-from utils.s3_interactions import upload_log_to_s3, upload_content_to_s3
+from db_connectors.s3_interactions import upload_log_to_s3, upload_content_to_s3
 from conversation.text_to_text import agentic_answer
 from conversation.recording import initiate_call_recording
 from conversation.audio_processing import url_wav_to_audio_file
