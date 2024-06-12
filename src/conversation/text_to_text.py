@@ -7,7 +7,7 @@ from utils.parameters_formatter import format_read_calendar_prompt, format_avail
 import json
 import pandas as pd
 import logging
-
+import os
 
 def get_events_workflow(json_input_str, conversation_history, params):
     date = json.loads(json_input_str)['date']
@@ -46,7 +46,16 @@ def save_event_workflow(json_input_str, conversation_history, params):
     Sandra_response = params["discussion"]["event_saved_message"]
     return Sandra_response
 
-
+def save_request_workflow(json_input_str, conversation_history, params):
+    request_json = json.loads(json_input_str)
+    logging.info(f"Success, dictionary well converted: {request_json}")    
+    df = pd.DataFrame(request_json)
+    if not os.path.exists("data/"):
+        os.makedirs("data/")
+    df.to_csv("data/request.csv", index=False)
+    logging.info("Saved request in csv")
+    
+    
 def agentic_answer(conversation_history, user_input, openai_client):
     """
     Text to text module perfomring the interaction between the user input and the model output.
@@ -69,23 +78,23 @@ def agentic_answer(conversation_history, user_input, openai_client):
         {"role": "assistant", "content": Sandra_response})
 
     # Read calendar workflow
-    if ('regarde' in Sandra_response) and ('calendrier' in Sandra_response):
+    # if ('regarde' in Sandra_response) and ('calendrier' in Sandra_response):
 
-        read_calendar_prompt = format_read_calendar_prompt(
-            params['prompts']['read_calendar_on_day_prompt'])
-        logging.info("Regarde calendrier")
-        conversation_history.append({"role": "system",
-                                     "content": read_calendar_prompt})
-        json_input_str = chat(conversation_history, openai_client)
-        logging.info(json_input_str)
-        try:
-            Sandra_response = get_events_workflow(
-                json_input_str, conversation_history, params)
-            return Sandra_response
-        except Exception as e:
-            logging.info(
-                f"An error occurred when trying to get date to read calendar: {e}")
-            return params["discussion"]["error_message"]
+    #     read_calendar_prompt = format_read_calendar_prompt(
+    #         params['prompts']['read_calendar_on_day_prompt'])
+    #     logging.info("Regarde calendrier")
+    #     conversation_history.append({"role": "system",
+    #                                  "content": read_calendar_prompt})
+    #     json_input_str = chat(conversation_history, openai_client)
+    #     logging.info(json_input_str)
+    #     try:
+    #         Sandra_response = get_events_workflow(
+    #             json_input_str, conversation_history, params)
+    #         return Sandra_response
+    #     except Exception as e:
+    #         logging.info(
+    #             f"An error occurred when trying to get date to read calendar: {e}")
+    #         return params["discussion"]["error_message"]
 
     # Save event workflow
     if 'sauvegarde' in Sandra_response.lower():
