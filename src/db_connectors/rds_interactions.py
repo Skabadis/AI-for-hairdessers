@@ -1,18 +1,26 @@
 import psycopg2
 from psycopg2 import sql
-from utils.read_params import read_params
 from dotenv import load_dotenv
 import os
+
+import yaml
+from pathlib import Path
+
+def read_params():
+  # Load the YAML file
+  with open(Path('../conf/parameters.yml'), 'r') as file:
+      parameters = yaml.safe_load(file)
+  return parameters 
 
 params = read_params()
 
 load_dotenv()
 # Database connection details
 RDS_HOST = os.getenv('RDS_HOST')
-RDS_PORT = params['RDS_PORT']
-RDS_NAME = params['RDS_NAME']
+RDS_PORT = params['rds']['RDS_PORT']
+RDS_NAME = params['rds']['RDS_NAME']
 RDS_USER = os.getenv('RDS_USER')
-RDS_PASSWORD = os.getenv('SkandIsmaBadrX17')
+RDS_PASSWORD = os.getenv('RDS_PASSWORD')
 
 print(RDS_HOST)
 print(RDS_PORT)
