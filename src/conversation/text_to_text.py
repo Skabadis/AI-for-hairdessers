@@ -8,6 +8,7 @@ import json
 import pandas as pd
 import logging
 import os
+from db_connectors.rds_interactions import read_db_params, insert_to_table, connect_to_db
 
 def get_events_workflow(json_input_str, conversation_history, params):
     date = json.loads(json_input_str)['date']
@@ -48,14 +49,18 @@ def save_event_workflow(json_input_str, conversation_history, params):
 
 def save_request_workflow(json_input_str, conversation_history, params, datetime, call_sid):
     request_json = json.loads(json_input_str)
-    logging.info(f"Success, dictionary well converted: {request_json}")    
-    df = pd.DataFrame([request_json])
-    df["datetime"] = datetime
-    df["call_sid"] = call_sid
-    if not os.path.exists("data/"):
-        os.makedirs("data/")
-    df.to_csv("data/request.csv", index=False)
-    logging.info("Saved request in csv")
+    logging.info(f"Success, dictionary well converted: {request_json}")  
+    
+    # Add datetime and call_sid to json
+    request_json["datetime"], request_json["call_sid"] = datetime, call_sid
+
+    # Write request to RDS DB
+    dbname, user, password, host, port = read_db_params()
+    conn = connect_to_db(dbname, user, password, host, port)
+    insert_to_table(conn, 'requests_table', request_json)
+    conn.close()
+    logging.info("Saved request in RDS DB")
+    
     # Confirm request was recorded to customer
     conversation_history.append({"role": "assistant",
                                  "content": params["discussion"]["request_saved_message"]})
