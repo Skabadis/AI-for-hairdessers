@@ -62,7 +62,7 @@ prompts:
 
 discussion: 
   welcome_message: |
-    Bonjour, bienvenue chez Suzuki Paris Pyrenees Automobiles. Je suis Sandra, l'assistante I.A. de prise de rendez-vous. Comment puis-je vous aider?
+    Bonjour, bienvenue chez Peugeot Paris 11 Locarson. Je suis Sandra, l'assistante I.A. de prise de rendez-vous. Comment puis-je vous aider?
 
   availability_message: |
     Le {} nous avons des disponibilités {}
