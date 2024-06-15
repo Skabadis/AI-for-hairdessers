@@ -24,7 +24,7 @@ def answer_call():
     if call_sid:
         log_filename, current_time = initialize_logger(call_sid)
         initiate_call_recording(call_sid)
-        
+    logging.info('Entered answer_call')
     response = VoiceResponse()        
     response.say("Hello, you are speaking with our AI receptionist.")
     response.start(
@@ -35,7 +35,10 @@ def answer_call():
     return str(response)
 
 async def handle_stream(websocket, path):
+    logging.info("Entered handle_stream")
+    print("Entered handle_stream")
     async for message in websocket:
+        print(f"Received audio stream data: {message}")
         logging.info(f"Received audio stream data: {message}")
         # Process the audio stream data with your AI system
         # Respond to the caller if necessary

@@ -5,7 +5,7 @@ import os
 
 def initiate_call_recording(call_sid):
     load_dotenv()
-    TWILIO_ACCOUNT_SID,  = os.getenv("TWILIO_ACCOUNT_SID"),
+    TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
     TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
     twilio_recording_url = f"https://api.twilio.com/2010-04-01/Accounts/{TWILIO_ACCOUNT_SID}/Calls/{call_sid}/Recordings.json"
     
