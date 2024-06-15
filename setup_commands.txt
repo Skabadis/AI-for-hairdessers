@@ -22,3 +22,6 @@ sudo systemctl restart nginx
 
 # 6. Regardez le journal des logs gunicorn
 sudo journalctl -u gunicorn -f
+
+# 7. Regarder le status de gunicorn
+sudo systemctl status gunicorn 

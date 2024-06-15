@@ -41,7 +41,7 @@ prompts:
                                 
     Voila a quoi ressembe le json:
 
-    {"prenom": "Prénom", "nom": "Nom", "phone": "Numero de telephone", "description": "Service demandé par le client", "immatriculation": "Plaque d'immatriculation", "marque": "Marque de la voiture", "modele", "Modèle de la voiture"}}
+    {"prenom": "Prénom", "nom": "Nom", "telephone": "Numero de telephone", "description": "Service demandé par le client", "immatriculation": "Plaque d'immatriculation", "marque": "Marque de la voiture", "modele", "Modèle de la voiture"}}
 
     Par exemple, pour un client qui veut faire une vidange, qui a une Suzuki Swift, avec pour plaque d'immatriculation 1452WL75, qui a pour prénom Jean et nom Moulin et numéro de téléphone 0701165188, le json que tu dois retourner est:
 
