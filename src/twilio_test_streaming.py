@@ -17,7 +17,7 @@ recording_url = None
 current_time = None
 
 @app.route("/initialize", methods=['GET', 'POST'])
-def answer_call():
+def initialize():
     global parameters, conversation_history, openai_client, log_filename, current_time
 
     call_sid = request.values.get('CallSid')
