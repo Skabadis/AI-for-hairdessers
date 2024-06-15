@@ -3,13 +3,29 @@ from twilio.twiml.voice_response import VoiceResponse, Start, Stream
 import asyncio
 import websockets
 import logging
+from utils.logging_config import initialize_logger
+from conversation.recording import initiate_call_recording
 
 app = Flask(__name__)
 
+# Initialize global variables
+parameters = None
+conversation_history = None
+openai_client = None
+log_filename = None
+recording_url = None
+current_time = None
+
 @app.route("/initialize", methods=['POST'])
 def answer_call():
-    response = VoiceResponse()
+    global parameters, conversation_history, openai_client, log_filename, current_time
 
+    call_sid = request.values.get('CallSid')
+    if call_sid:
+        log_filename, current_time = initialize_logger(call_sid)
+        initiate_call_recording(call_sid)
+        
+    response = VoiceResponse()        
     response.say("Hello, you are speaking with our AI receptionist.")
     response.start(
         Stream(
