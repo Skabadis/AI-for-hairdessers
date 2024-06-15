@@ -4,7 +4,7 @@ from llms_connectors.openai_connector import get_openai_client
 from workers.shutdown_worker import shutdown_worker
 from utils.read_params import read_params
 from utils.logging_config import initialize_logger
-from utils.s3_interactions import upload_log_to_s3, upload_content_to_s3
+from db_connectors.s3_interactions import upload_log_to_s3, upload_content_to_s3
 from conversation.text_to_text import agentic_answer
 from conversation.recording import initiate_call_recording
 from conversation.audio_processing import url_wav_to_audio_file
@@ -18,15 +18,15 @@ conversation_history = None
 openai_client = None
 log_filename = None
 recording_url = None
-
+current_time = None
 
 @app.route("/initialize", methods=['GET', 'POST'])
 def initialize():
-    global parameters, conversation_history, openai_client, log_filename
+    global parameters, conversation_history, openai_client, log_filename, current_time
 
     call_sid = request.values.get('CallSid')
     if call_sid:
-        log_filename = initialize_logger(call_sid)
+        log_filename, current_time = initialize_logger(call_sid)
         initiate_call_recording(call_sid)
         
     # Load parameters
@@ -59,6 +59,7 @@ def initialize():
 # TODO: check how we are managing the conversation_history. We are adding user_input and Sandra_response here AND in agentic_answer, let's make sure we are not double adding everything
 @app.route("/voice", methods=['GET', 'POST'])
 def voice():
+    call_sid = request.values.get('CallSid')
     resp = VoiceResponse()
     try:
         user_input = request.form.get('SpeechResult')
@@ -67,21 +68,23 @@ def voice():
         # Get Sandra_response
         if not user_input:  # If no user input detected say no user input message
             Sandra_response = parameters['discussion']['no_user_input_message']
+            conversation_history.append({"role": "assistant", "content": Sandra_response})
         else:  # If user input detected, regular conversation
-            conversation_history.append(
-                {"role": "user", "content": user_input})
+            # conversation_history.append(
+            #     {"role": "user", "content": user_input})
             Sandra_response = agentic_answer(
-                conversation_history, user_input, openai_client)
+                conversation_history, user_input, openai_client, current_time, call_sid)
 
         # Add Sandra_reponse to conversation history
-        conversation_history.append(
-            {"role": "assistant", "content": Sandra_response})
+        # conversation_history.append(
+        #     {"role": "assistant", "content": Sandra_response})
 
+        # logging.info(f"Conversation history: {conversation_history[1:]}")
         # Case when end of conversation
         # TODO: improve to have the worker start and shutdown based call start and end
-        if Sandra_response.lower() == "end conversation":
+        if 'au revoir' in Sandra_response.lower():
             # Use alice to save cost, Polly.Lea-Neural for the best one
-            resp.say("Au revoir", voice='Polly.Lea-Neural',
+            resp.say(Sandra_response, voice='Polly.Lea-Neural',
                      language='fr-FR')
             return str(resp)
 

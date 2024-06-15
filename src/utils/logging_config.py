@@ -20,7 +20,7 @@ def initialize_logger(call_sid):
 
     # Set up the log handler
     log_filepath = os.path.join(log_folder, log_filename)
-    handler = RotatingFileHandler(log_filepath, maxBytes=10000, backupCount=10)
+    handler = RotatingFileHandler(log_filepath, maxBytes=100000, backupCount=10)
     handler.setLevel(logging.INFO)
 
     # Set up the formatter
@@ -37,4 +37,4 @@ def initialize_logger(call_sid):
         logger.removeHandler(logger.handlers[0])
 
     logger.addHandler(handler)
-    return log_filename
+    return log_filename, current_time

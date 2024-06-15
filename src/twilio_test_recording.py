@@ -2,7 +2,7 @@ from flask import Flask, request
 from twilio.twiml.voice_response import VoiceResponse, Gather
 import logging
 from utils.logging_config import initialize_logger
-from utils.s3_interactions import upload_log_to_s3, upload_content_to_s3
+from db_connectors.s3_interactions import upload_log_to_s3, upload_content_to_s3
 from workers.shutdown_worker import shutdown_worker
 from conversation.audio_processing import url_wav_to_audio_file
 from utils.read_params import read_params
@@ -22,7 +22,7 @@ def initialize():
     parameters = read_params()
     call_sid = request.values.get('CallSid')
     if call_sid:
-        log_filename = initialize_logger(call_sid)
+        log_filename, current_time = initialize_logger(call_sid)
         initiate_call_recording(call_sid)
 
     resp = VoiceResponse()
