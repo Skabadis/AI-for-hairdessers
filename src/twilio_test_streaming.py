@@ -2,24 +2,25 @@ from flask import Flask, request
 from twilio.twiml.voice_response import VoiceResponse, Start, Stream
 import asyncio
 import websockets
+import logging
 
 app = Flask(__name__)
 
-@app.route("/answer-call", methods=['POST'])
+@app.route("/initialize", methods=['POST'])
 def answer_call():
     response = VoiceResponse()
 
     response.say("Hello, you are speaking with our AI receptionist.")
     response.start(
         Stream(
-            url="wss://your-websocket-server-url/stream"
+            url="wss://13.50.101.111:8765/stream"
         )
     )
     return str(response)
 
 async def handle_stream(websocket, path):
     async for message in websocket:
-        print(f"Received audio stream data: {message}")
+        logging.info(f"Received audio stream data: {message}")
         # Process the audio stream data with your AI system
         # Respond to the caller if necessary
 
