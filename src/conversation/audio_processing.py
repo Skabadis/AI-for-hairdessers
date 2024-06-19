@@ -7,6 +7,9 @@ import time
 
 
 def url_wav_to_audio_file(recording_url):
+    if not recording_url:
+        return BytesIO(""), ""
+    
     # Check if the URL ends with ".wav"
     if not recording_url.endswith('.wav'):
         logging.error("URL does not end with .wav")
