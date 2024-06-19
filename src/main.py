@@ -113,9 +113,11 @@ def call_status():
         _, recording_content = url_wav_to_audio_file(recording_url)
         content_folder, bucket_name = parameters["paths"]["logs_recording"], parameters["paths"]["s3_bucket_name"]
         recording_filename = log_filename.replace(".log", ".wav")
-        upload_content_to_s3(recording_content, recording_filename,
-                             content_folder, bucket_name)
-
+        if recording_content:
+          upload_content_to_s3(recording_content, recording_filename,
+                              content_folder, bucket_name)
+        else:
+            logging.info('Recording_content is null, no recording to be saved.')
         # Shutdown the worker at the end of the call
         shutdown_worker()
 
