@@ -20,6 +20,19 @@ log_filename = None
 recording_url = None
 current_time = None
 
+@app.route("/announce-recording", methods=['GET', 'POST'])
+def announce_recording():
+    # Create a TwiML response
+    resp = VoiceResponse()
+    
+    # Have the bot say something
+    resp.say("Cet appel peut etre enregistré pour des controles de qualité.", voice='Polly.Lea-Neural', language='fr-FR')
+    
+    # Redirect to another URL to trigger an action
+    resp.redirect('/initialize')
+    
+    return str(resp)    
+    
 @app.route("/initialize", methods=['GET', 'POST'])
 def initialize():
     global parameters, conversation_history, openai_client, log_filename, current_time
