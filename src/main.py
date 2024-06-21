@@ -81,7 +81,7 @@ def initialize():
         'openai_client': openai_client
     }
     
-    logging.info(f"Request environ: {call_data_store}")
+    logging.info(f"Call data store: {call_data_store}")
 
     return str(resp)
 
@@ -100,8 +100,8 @@ def voice():
         conversation_history = call_data_store[call_sid]['conversation_history']
         openai_client = call_data_store[call_sid]['openai_client']
         
-        logging.info(f"Conversation history: {conversation_history}")
-        logging.info(f"Request environ: {request.environ}")
+        # logging.info(f"Conversation history: {conversation_history}")
+        logging.info(f"Call data store: {call_data_store}")
         # Get Sandra_response
         if not user_input:  # If no user input detected say no user input message
             Sandra_response = parameters['discussion']['no_user_input_message']
