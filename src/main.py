@@ -159,7 +159,7 @@ def call_status():
         else:
             logging.info('Recording_content is null, no recording to be saved.')
         # Shutdown the worker at the end of the call
-        shutdown_worker()
+        # shutdown_worker()
 
         # Upload the log file to S3
         log_folder, bucket_name = parameters["paths"]["logs_info"], parameters["paths"]["s3_bucket_name"]
