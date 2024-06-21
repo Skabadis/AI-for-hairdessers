@@ -21,6 +21,9 @@ app = Flask(__name__)
 # recording_url = None
 # current_time = None
 
+# Global in-memory storage for call data
+call_data_store = {}
+
 @app.route("/announce-recording", methods=['GET', 'POST'])
 def announce_recording():
     # Create a TwiML response
@@ -37,7 +40,6 @@ def announce_recording():
 @app.route("/initialize", methods=['GET', 'POST'])
 def initialize():
     # global parameters, conversation_history, openai_client, log_filename, current_time
-
     call_sid = request.values.get('CallSid')
     if call_sid:
         log_filename, current_time = initialize_logger(call_sid)
@@ -69,14 +71,17 @@ def initialize():
     gather.say(Sandra_response, voice='Polly.Lea-Neural', language='fr-FR')
     resp.append(gather)
     
-        # Save necessary state to the Flask's request context
-    request.environ['log_filename'] = log_filename
-    request.environ['current_time'] = current_time
-    request.environ['parameters'] = parameters
-    request.environ['conversation_history'] = conversation_history
-    request.environ['openai_client'] = openai_client
+    # Save necessary data to the call data store with call_sid
+    global call_data_store
+    call_data_store[call_sid] = {
+        'log_filename': log_filename,
+        'current_time': current_time,
+        'parameters': parameters,
+        'conversation_history': conversation_history,
+        'openai_client': openai_client
+    }
     
-    logging.info(f"Request environ: {request.environ}")
+    logging.info(f"Request environ: {call_data_store}")
 
     return str(resp)
 
@@ -90,10 +95,10 @@ def voice():
         logging.info(f"User said: {user_input}")
 
         # Get state variables
-        current_time = request.environ.get('current_time')
-        parameters = request.environ.get('parameters')
-        conversation_history = request.environ.get('conversation_history')
-        openai_client = request.environ.get('openai_client')
+        current_time = call_data_store[call_sid]['current_time']
+        parameters = call_data_store[call_sid]['parameters']
+        conversation_history = call_data_store[call_sid]['conversation_history']
+        openai_client = call_data_store[call_sid]['openai_client']
         
         logging.info(f"Conversation history: {conversation_history}")
         logging.info(f"Request environ: {request.environ}")
@@ -121,7 +126,7 @@ def voice():
         resp.append(gather)
         
         # Save updated state to the Flask's request context
-        request.environ['conversation_history'] = conversation_history
+        call_data_store[call_sid]['conversation_history'] = conversation_history
         
     except Exception as e:
         tb = traceback.format_exc()
@@ -135,13 +140,14 @@ def voice():
 @app.route("/call-status", methods=['POST'])
 def call_status():
     call_status = request.values.get('CallStatus')
+    call_sid = request.values.get('CallSid')
     if call_status in ['completed', 'canceled', 'no-answer']:
         logging.info(f"Call status: {call_status}")
         
-        # Get state variables
-        log_filename = request.environ.get('log_filename')
-        parameters = request.environ.get('parameters')
-        recording_url = request.environ.get('recording_url')
+        # Get data store variables
+        log_filename = call_data_store[call_sid]['log_filename']
+        parameters = call_data_store[call_sid]['parameters']
+        recording_url = call_data_store[call_sid]['recording_url']
         
         # Upload recording to S3
         _, recording_content = url_wav_to_audio_file(recording_url)
@@ -162,11 +168,11 @@ def call_status():
 
 @app.route("/recording-events", methods=['POST'])
 def recording_events():
-    global recording_url
+    call_sid = request.values.get('CallSid')
     # Retrieve recording URL and other details from Twilio's POST request
     recording_url = request.form['RecordingUrl'] + ".wav"
     
-    # Save recording_url state
-    request.environ['recording_url'] = recording_url
+    # Save recording_url in call_data_store
+    call_data_store[call_sid]['recording_url'] = recording_url
     logging.info(f"Recording URL: {recording_url}")
     return "", 200
