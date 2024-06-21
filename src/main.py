@@ -26,7 +26,7 @@ def announce_recording():
     resp = VoiceResponse()
     
     # Have the bot say something
-    resp.say("Cet appel peut etre enregistré pour des controles de qualité.", voice='Polly.Lea-Neural', language='fr-FR')
+    resp.say("Cet appel peut etre enregistré pour des contrôle de qualité.", voice='Polly.Lea-Neural', language='fr-FR')
     
     # Redirect to another URL to trigger an action
     resp.redirect('/initialize')
