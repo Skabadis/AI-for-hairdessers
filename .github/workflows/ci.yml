@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - skandere/daily-email
+      - skandere/enable-concurrent-calls
 jobs:
   deploy:
     runs-on: ubuntu-latest
