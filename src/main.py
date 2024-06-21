@@ -9,6 +9,7 @@ from conversation.text_to_text import agentic_answer
 from conversation.recording import initiate_call_recording
 from conversation.audio_processing import url_wav_to_audio_file
 import logging
+import traceback
 
 app = Flask(__name__)
 
@@ -75,9 +76,11 @@ def initialize():
     request.environ['conversation_history'] = conversation_history
     request.environ['openai_client'] = openai_client
     
+    logging.info(f"Request environ: {request.environ}")
+
     return str(resp)
 
-# TODO: check how we are managing the conversation_history. We are adding user_input and Sandra_response here AND in agentic_answer, let's make sure we are not double adding everything
+
 @app.route("/voice", methods=['GET', 'POST'])
 def voice():
     call_sid = request.values.get('CallSid')
@@ -92,22 +95,16 @@ def voice():
         conversation_history = request.environ.get('conversation_history')
         openai_client = request.environ.get('openai_client')
         
+        logging.info(f"Conversation history: {conversation_history}")
+        logging.info(f"Request environ: {request.environ}")
         # Get Sandra_response
         if not user_input:  # If no user input detected say no user input message
             Sandra_response = parameters['discussion']['no_user_input_message']
             conversation_history.append({"role": "assistant", "content": Sandra_response})
         else:  # If user input detected, regular conversation
-            # conversation_history.append(
-            #     {"role": "user", "content": user_input})
             Sandra_response = agentic_answer(
                 conversation_history, user_input, openai_client, current_time, call_sid)
 
-        # Add Sandra_reponse to conversation history
-        # conversation_history.append(
-        #     {"role": "assistant", "content": Sandra_response})
-
-        # logging.info(f"Conversation history: {conversation_history[1:]}")
-        # Case when end of conversation
         # TODO: improve to have the worker start and shutdown based call start and end
         if 'au revoir' in Sandra_response.lower():
             # Use alice to save cost, Polly.Lea-Neural for the best one
@@ -127,7 +124,8 @@ def voice():
         request.environ['conversation_history'] = conversation_history
         
     except Exception as e:
-        logging.error(f"Error: {e}")
+        tb = traceback.format_exc()
+        logging.error(f"Error: {e}\n Traceback: {tb}")
         resp.say("Une erreur est survenue. Veuillez réessayer plus tard.", voice='Polly.Lea-Neural',
                  language='fr-FR')  # use alice to save cost, Polly.Lea-Neural for the best one
 
