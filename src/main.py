@@ -13,12 +13,12 @@ import logging
 app = Flask(__name__)
 
 # Initialize global variables
-parameters = None
-conversation_history = None
-openai_client = None
-log_filename = None
-recording_url = None
-current_time = None
+# parameters = None
+# conversation_history = None
+# openai_client = None
+# log_filename = None
+# recording_url = None
+# current_time = None
 
 @app.route("/announce-recording", methods=['GET', 'POST'])
 def announce_recording():
@@ -35,7 +35,7 @@ def announce_recording():
     
 @app.route("/initialize", methods=['GET', 'POST'])
 def initialize():
-    global parameters, conversation_history, openai_client, log_filename, current_time
+    # global parameters, conversation_history, openai_client, log_filename, current_time
 
     call_sid = request.values.get('CallSid')
     if call_sid:
@@ -67,6 +67,14 @@ def initialize():
                     speechTimeout='auto', language='fr-FR', actionOnEmptyResult=True, speechModel="experimental_conversations")
     gather.say(Sandra_response, voice='Polly.Lea-Neural', language='fr-FR')
     resp.append(gather)
+    
+        # Save necessary state to the Flask's request context
+    request.environ['log_filename'] = log_filename
+    request.environ['current_time'] = current_time
+    request.environ['parameters'] = parameters
+    request.environ['conversation_history'] = conversation_history
+    request.environ['openai_client'] = openai_client
+    
     return str(resp)
 
 # TODO: check how we are managing the conversation_history. We are adding user_input and Sandra_response here AND in agentic_answer, let's make sure we are not double adding everything
@@ -78,6 +86,12 @@ def voice():
         user_input = request.form.get('SpeechResult')
         logging.info(f"User said: {user_input}")
 
+        # Get state variables
+        current_time = request.environ.get('current_time')
+        parameters = request.environ.get('parameters')
+        conversation_history = request.environ.get('conversation_history')
+        openai_client = request.environ.get('openai_client')
+        
         # Get Sandra_response
         if not user_input:  # If no user input detected say no user input message
             Sandra_response = parameters['discussion']['no_user_input_message']
@@ -108,6 +122,10 @@ def voice():
         logging.info(f"Sandra's response: {Sandra_response}")
 
         resp.append(gather)
+        
+        # Save updated state to the Flask's request context
+        request.environ['conversation_history'] = conversation_history
+        
     except Exception as e:
         logging.error(f"Error: {e}")
         resp.say("Une erreur est survenue. Veuillez réessayer plus tard.", voice='Polly.Lea-Neural',
@@ -121,7 +139,12 @@ def call_status():
     call_status = request.values.get('CallStatus')
     if call_status in ['completed', 'canceled', 'no-answer']:
         logging.info(f"Call status: {call_status}")
-
+        
+        # Get state variables
+        log_filename = request.environ.get('log_filename')
+        parameters = request.environ.get('parameters')
+        recording_url = request.environ.get('recording_url')
+        
         # Upload recording to S3
         _, recording_content = url_wav_to_audio_file(recording_url)
         content_folder, bucket_name = parameters["paths"]["logs_recording"], parameters["paths"]["s3_bucket_name"]
@@ -144,5 +167,8 @@ def recording_events():
     global recording_url
     # Retrieve recording URL and other details from Twilio's POST request
     recording_url = request.form['RecordingUrl'] + ".wav"
+    
+    # Save recording_url state
+    request.environ['recording_url'] = recording_url
     logging.info(f"Recording URL: {recording_url}")
     return "", 200
