@@ -6,7 +6,7 @@ from google_calendar_api.get_credentials import get_credentials
 def add_event(event):
     try:
         creds = get_credentials()
-        service = build("calendar", "v3", credentials=creds)
+        service = build("calendar", "v3", credentials=creds, cache_discovery=False)
 
         # Call the Calendar API
         event = service.events().insert(calendarId='primary', body=event).execute()

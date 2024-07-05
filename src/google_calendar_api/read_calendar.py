@@ -4,7 +4,7 @@ from googleapiclient.errors import HttpError
 from google_calendar_api.get_credentials import get_credentials
 # from get_credentials import get_credentials
 import pandas as pd
-
+import logging
 
 """
 TODO: Figure out better schema to account for having multiple hairdresser in the same salon. For now models agenda of only one hairdresser.
@@ -15,7 +15,7 @@ def get_events(creds, date):
   Prints the start and name of the events of the date.
   """
   try:
-    service = build("calendar", "v3", credentials=creds)
+    service = build("calendar", "v3", credentials=creds, cache_discovery=False)
     
     # TODO: adjsut start and end to the right timezone, right now it is using UTC timezone
     date_ts = pd.Timestamp(date)
@@ -24,7 +24,7 @@ def get_events(creds, date):
     end =  (datetime.datetime(tomorrow.year, tomorrow.month, tomorrow.day, 00, 00)).isoformat() + 'Z'
 
     # Calling google calendar API
-    print(f"Getting the events for date {date}")
+    logging.info(f"Getting the events for date {date}")
     events_result = (
         service.events()
         .list(
@@ -40,7 +40,7 @@ def get_events(creds, date):
     events = events_result.get("items", [])
 
     if not events:
-      print("No upcoming events found.")
+      logging.info("No upcoming events found.")
       return pd.DataFrame(columns=['kind', 'etag', 'id', 'status', 'htmlLink', 'created', 'updated',
                                    'summary', 'creator', 'organizer', 'start', 'end', 'iCalUID',
                                    'sequence', 'reminders', 'eventType'])
@@ -48,10 +48,10 @@ def get_events(creds, date):
     # Prints the start and name of the events
     for event in events:
       start = event["start"].get("dateTime", event["start"].get("date"))
-      print(start, event["summary"])
+      # logging.info(start, event["summary"])
 
   except HttpError as error:
-    print(f"An error occurred: {error}")
+    logging.info(f"An error occurred: {error}")
     
   events_df = pd.DataFrame(events) 
   return  events_df
@@ -69,8 +69,8 @@ def process_events_df(df):
     
     # Converting relevant time columns to datetime
     # df['day'] = pd.to_datetime(df['start_datetime_paris'].dt.date)
-    df['event_start'] = df['start_datetime_paris'].dt.tz_convert(None)
-    df['event_end'] = df['end_datetime_paris'].dt.tz_convert(None)
+    df['event_start'] = df['start_datetime_paris']#.dt.tz_convert(None)
+    df['event_end'] = df['end_datetime_paris']#.dt.tz_convert(None)
 
   else:
       columns = list(df.columns) + ['start_datetime', 'start_timezone', 'start_datetime_paris', 'end_datetime', 'end_timezone', 'end_datetime_paris', 'event_start', 'event_end']

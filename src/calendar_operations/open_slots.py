@@ -4,11 +4,11 @@ from datetime import timedelta
 from utils.utils import convert_dt_to_time_str
 
 def get_open_slots(appointments, day, opening_time, closing_time, freq, duration):
-  opening_time = pd.Timestamp(f'{day} {opening_time}')
-  closing_time = pd.Timestamp(f'{day} {closing_time}')
+  opening_time = pd.Timestamp(f'{day} {opening_time}').tz_localize("Europe/Paris")
+  closing_time = pd.Timestamp(f'{day} {closing_time}').tz_localize("Europe/Paris")
   day = pd.to_datetime(day) 
   
-  # Generate frea-minute intervals within the working hours
+  # Generate freq-minute intervals within the working hours
   time_slots = pd.date_range(start=opening_time, end=closing_time, freq=freq)
 
   # Create the spine dataframe
