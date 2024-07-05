@@ -90,35 +90,42 @@ def agentic_answer(conversation_history, user_input, openai_client, datetime, ca
         {"role": "assistant", "content": Sandra_response})
 
     # Read calendar workflow
-    # if ('regarde' in Sandra_response) and ('calendrier' in Sandra_response):
+    if ('regarde' in Sandra_response) and ('calendrier' in Sandra_response):
 
-    #     read_calendar_prompt = format_read_calendar_prompt(
-    #         params['prompts']['read_calendar_on_day_prompt'])
-    #     logging.info("Regarde calendrier")
-    #     conversation_history.append({"role": "system",
-    #                                  "content": read_calendar_prompt})
-    #     json_input_str = chat(conversation_history, openai_client)
-    #     logging.info(json_input_str)
-    #     try:
-    #         Sandra_response = get_events_workflow(
-    #             json_input_str, conversation_history, params)
-    #         return Sandra_response
-    #     except Exception as e:
-    #         logging.info(
-    #             f"An error occurred when trying to get date to read calendar: {e}")
-    #         return params["discussion"]["error_message"]
+        read_calendar_prompt = format_read_calendar_prompt(
+            params['prompts']['read_calendar_on_day_prompt'])
+        logging.info("Regarde calendrier")
+        conversation_history.append({"role": "system",
+                                     "content": read_calendar_prompt})
+        json_input_str = chat(conversation_history, openai_client)
+        logging.info(json_input_str)
+        try:
+            Sandra_response = get_events_workflow(
+                json_input_str, conversation_history, params)
+            return Sandra_response
+        except Exception as e:
+            logging.info(
+                f"An error occurred when trying to get date to read calendar: {e}")
+            return params["discussion"]["error_message"]
 
     # Save event workflow
     if 'sauvegarde' in Sandra_response.lower():
         logging.info(f"Sauvegarde. This was Sandra response: {Sandra_response}")
         
+        # Write request prompt to DB
+        # conversation_history.append({"role": "system",
+        #                              "content": params["prompts"]["write_request_prompt"]})
+        
+        # Write event prompt
         conversation_history.append({"role": "system",
-                                     "content": params["prompts"]["write_request_prompt"]})
+                              "content": params["prompts"]["write_event_prompt"]})
+        
         json_input_str = chat(conversation_history, openai_client)
         logging.info(f"This is supposed to be a JSON:\n {json_input_str}")
         try:
-            Sandra_response = save_request_workflow(
-                json_input_str, conversation_history, params, datetime, call_sid)
+            # Sandra_response = save_request_workflow(
+            #     json_input_str, conversation_history, params, datetime, call_sid)
+            Sandra_response = save_event_workflow(json_input_str, conversation_history, params)
             return Sandra_response
         except Exception as e:
             logging.info(
