@@ -69,8 +69,8 @@ def process_events_df(df):
     
     # Converting relevant time columns to datetime
     # df['day'] = pd.to_datetime(df['start_datetime_paris'].dt.date)
-    df['event_start'] = df['start_datetime_paris'].dt.tz_convert(None)
-    df['event_end'] = df['end_datetime_paris'].dt.tz_convert(None)
+    df['event_start'] = df['start_datetime_paris']#.dt.tz_convert(None)
+    df['event_end'] = df['end_datetime_paris']#.dt.tz_convert(None)
 
   else:
       columns = list(df.columns) + ['start_datetime', 'start_timezone', 'start_datetime_paris', 'end_datetime', 'end_timezone', 'end_datetime_paris', 'event_start', 'event_end']
