@@ -15,7 +15,7 @@ def get_events(creds, date):
   Prints the start and name of the events of the date.
   """
   try:
-    service = build("calendar", "v3", credentials=creds)
+    service = build("calendar", "v3", credentials=creds, cache_discovery=False)
     
     # TODO: adjsut start and end to the right timezone, right now it is using UTC timezone
     date_ts = pd.Timestamp(date)
