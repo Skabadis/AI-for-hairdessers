@@ -6,6 +6,7 @@ on:
       - main
       - skandere/daily-email
       - skandere/enable-concurrent-calls
+      - skandere/calendar-demo
 jobs:
   deploy:
     runs-on: ubuntu-latest
