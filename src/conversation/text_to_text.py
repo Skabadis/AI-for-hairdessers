@@ -121,7 +121,7 @@ def agentic_answer(conversation_history, user_input, openai_client, datetime, ca
                               "content": params["prompts"]["write_event_prompt"]})
         
         json_input_str = chat(conversation_history, openai_client)
-        json_input_str = {"summary": "Charles Durand - 0651164080", "description": "Réparation fuite d'huile, Opel Zafira, 2895TS94", "start": {"dateTime": "2024-07-08T18:00:00+02:00", "timeZone": "Europe/Paris"}}
+        json_input_str = """{"summary": "Charles Durand - 0651164080", "description": "Réparation fuite d'huile, Opel Zafira, 2895TS94", "start": {"dateTime": "2024-07-08T18:00:00+02:00", "timeZone": "Europe/Paris"}}"""
         logging.info(f"This is supposed to be a JSON:\n {json_input_str}")
         try:
             # Sandra_response = save_request_workflow(
