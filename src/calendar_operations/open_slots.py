@@ -65,7 +65,7 @@ def convert_open_slots_to_str(open_slots):
   availabilities_string = ' , '.join(availabilities_string)
   return availabilities_string
 
-def get_open_slots_str(appointments, day, opening_time="09:00:00", closing_time="17:00:00", freq='30min', duration=30):
+def get_open_slots_str(appointments, day, opening_time="09:00:00", closing_time="19:00:00", freq='30min', duration=30):
     open_slots = get_open_slots(appointments, day, opening_time=opening_time, closing_time=closing_time, freq=freq, duration=duration)
     availabilities_string = convert_open_slots_to_str(open_slots)
     return availabilities_string
